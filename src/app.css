@@ -287,12 +287,6 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .message-animate-in {
-    animation: none;
-  }
-}
-
 /* Shiki dual-theme switching */
 [data-theme="dark"] .shiki,
 [data-theme="dark"] .shiki span {

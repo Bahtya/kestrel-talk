@@ -114,6 +114,7 @@ Shift+Enter — New line`);
       oninput={autoResize}
       onkeydown={handleKeydown}
       placeholder="Message"
+      aria-label="Message input"
       rows="1"
       {disabled}
     ></textarea>

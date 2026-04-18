@@ -230,4 +230,41 @@ describe('ChatStore', () => {
       expect(store.activeResponse!.blockOrder).toEqual([]);
     });
   });
+
+  describe('retry', () => {
+    it('retries by resending the user message before the error', () => {
+      // Send a user message
+      store.send('hello');
+      expect(store.messages.length).toBe(1);
+      expect(store.messages[0].role).toBe('user');
+
+      // Receive an error
+      const env: ServerEnvelope = {
+        type: 'error',
+        id: 'e1',
+        code: 'timeout',
+        content: 'Request timed out',
+      };
+      // @ts-expect-error test access
+      store.handleEnvelope(env);
+      expect(store.messages.length).toBe(2);
+
+      // Retry the error
+      const errorId = store.messages[1].id;
+      store.retry(errorId);
+
+      // Should have removed the user message and error, then re-sent
+      // The retry sliced back to before the user msg, then send() added it back
+      expect(store.messages.length).toBe(1);
+      expect(store.messages[0].role).toBe('user');
+      expect(store.messages[0].content).toBe('hello');
+    });
+
+    it('does nothing if message not found', () => {
+      store.send('test');
+      const count = store.messages.length;
+      store.retry('nonexistent-id');
+      expect(store.messages.length).toBe(count);
+    });
+  });
 });
