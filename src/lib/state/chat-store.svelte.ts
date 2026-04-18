@@ -227,6 +227,9 @@ class ChatStore {
 
   private handleError(id: string, code: string, content: string): void {
     this.lastError = `${code}: ${content}`;
+    if (this.activeResponse?.id === id) {
+      this.activeResponse = null;
+    }
     const msg: ChatMessage = {
       id,
       role: 'assistant',

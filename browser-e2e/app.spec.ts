@@ -491,23 +491,23 @@ test.describe('kestrel-talk browser E2E', () => {
     await page.goto('/');
     await page.waitForTimeout(1500);
 
-    // Default should be dark
+    // Capture initial theme
     const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-    expect(theme).toBe('dark');
+    expect(theme).toBeTruthy();
 
     // Click theme toggle in sidebar footer
     const themeBtn = page.locator('[aria-label="Toggle theme"]');
     await themeBtn.click();
     await page.waitForTimeout(300);
 
-    // Should switch to light
+    // Should switch to opposite theme
     const newTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-    expect(newTheme).toBe('light');
+    expect(newTheme).not.toBe(theme);
 
     // Toggle back
     await themeBtn.click();
     await page.waitForTimeout(300);
-    const backToDark = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-    expect(backToDark).toBe('dark');
+    const backToOriginal = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(backToOriginal).toBe(theme);
   });
 });

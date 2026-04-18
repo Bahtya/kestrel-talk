@@ -99,6 +99,21 @@ describe('parseEnvelope', () => {
   it('returns null for empty string', () => {
     expect(parseEnvelope('')).toBeNull();
   });
+
+  it('rejects envelope with missing required fields', () => {
+    expect(parseEnvelope('{"type":"welcome","id":"w1"}')).toBeNull();
+    expect(parseEnvelope('{"type":"error","id":"e1"}')).toBeNull();
+    expect(parseEnvelope('{"type":"block_start","id":"b1","response_id":"r1","block_type":"invalid"}')).toBeNull();
+  });
+
+  it('rejects envelope with wrong field types', () => {
+    expect(parseEnvelope('{"type":"streaming","id":"s1","chunk":"hi","done":"yes"}')).toBeNull();
+    expect(parseEnvelope('{"type":"message","id":123}')).toBeNull();
+  });
+
+  it('rejects unknown envelope type', () => {
+    expect(parseEnvelope('{"type":"unknown","id":"x"}')).toBeNull();
+  });
 });
 
 describe('createMessage', () => {

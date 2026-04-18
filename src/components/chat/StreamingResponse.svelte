@@ -33,7 +33,7 @@
         {:else if block.blockType === 'image'}
           <ImageBlock src={block.imageUrl ?? ''} caption={block.imageCaption} />
         {:else if block.blockType === 'error'}
-          <div class="error-block">
+          <div class="error-block" class:streaming={block.status === 'streaming'}>
             <span class="error-code">{block.errorCode ?? 'error'}</span>
             <span class="error-text">{block.content}</span>
           </div>
@@ -93,6 +93,15 @@
     border: 1px solid rgba(229, 57, 53, 0.2);
     border-radius: var(--radius-sm);
     font-size: 13px;
+  }
+
+  .error-block.streaming {
+    animation: error-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes error-pulse {
+    0%, 100% { border-color: rgba(229, 57, 53, 0.2); }
+    50% { border-color: rgba(229, 57, 53, 0.5); }
   }
 
   .error-code {

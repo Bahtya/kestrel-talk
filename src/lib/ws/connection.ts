@@ -3,6 +3,7 @@ import { ReconnectStrategy } from './reconnect';
 import type { ConnectionState } from '../state/types';
 
 const PING_INTERVAL = 30000;
+const CONNECT_TIMEOUT = 10000;
 const DEFAULT_URL = 'ws://127.0.0.1:8090';
 
 type EnvelopeHandler = (envelope: ServerEnvelope) => void;
@@ -14,6 +15,7 @@ export class WsConnection {
   private token: string | undefined;
   private reconnect: ReconnectStrategy;
   private pingTimer: ReturnType<typeof setInterval> | null = null;
+  private connectTimer: ReturnType<typeof setTimeout> | null = null;
   private messageQueue: string[] = [];
   private envelopeHandler: EnvelopeHandler | null = null;
   private stateHandler: StateHandler | null = null;
@@ -45,7 +47,10 @@ export class WsConnection {
       return;
     }
 
+    this.startConnectTimeout();
+
     this.ws.onopen = () => {
+      this.clearConnectTimeout();
       this.reconnect.reset();
       this.setState('connected');
       if (this.token) {
@@ -63,6 +68,7 @@ export class WsConnection {
     };
 
     this.ws.onclose = () => {
+      this.clearConnectTimeout();
       this.stopPing();
       this.ws = null;
       if (!this.intentionalClose) {
@@ -79,6 +85,7 @@ export class WsConnection {
   disconnect(): void {
     this.intentionalClose = true;
     this.reconnect.cancel();
+    this.clearConnectTimeout();
     this.stopPing();
     this.ws?.close();
     this.ws = null;
@@ -123,6 +130,22 @@ export class WsConnection {
     if (this.pingTimer) {
       clearInterval(this.pingTimer);
       this.pingTimer = null;
+    }
+  }
+
+  private startConnectTimeout(): void {
+    this.clearConnectTimeout();
+    this.connectTimer = setTimeout(() => {
+      this.ws?.close();
+      this.setState('error');
+      this.scheduleReconnect();
+    }, CONNECT_TIMEOUT);
+  }
+
+  private clearConnectTimeout(): void {
+    if (this.connectTimer) {
+      clearTimeout(this.connectTimer);
+      this.connectTimer = null;
     }
   }
 }

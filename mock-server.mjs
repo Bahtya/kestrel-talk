@@ -49,6 +49,13 @@ const responses = [
       { type: 'text', content: 'A common kestrel (*Falco tinnunculus*).' },
     ],
   },
+  // error block test
+  {
+    blocks: [
+      { type: 'text', content: 'Let me try that operation...' },
+    ],
+    error: { code: 'rate_limit', message: 'Too many requests. Please wait and try again.' },
+  },
   // v1 simple streaming test
   {
     v1: true,
@@ -145,7 +152,12 @@ wss.on('connection', (ws, req) => {
       await delay(50);
     }
 
-    send({ type: 'response_end', id: responseId });
+    if (response.error) {
+      send({ type: 'error', id: responseId, code: response.error.code, content: response.error.message });
+      send({ type: 'response_end', id: responseId });
+    } else {
+      send({ type: 'response_end', id: responseId });
+    }
   }
 
   function send(data) {

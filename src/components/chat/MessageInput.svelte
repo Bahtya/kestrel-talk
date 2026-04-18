@@ -89,9 +89,11 @@ Shift+Enter — New line`);
 </script>
 
 <div class="input-area">
-  {#if chatStore.connectionState === 'disconnected' || chatStore.connectionState === 'error'}
-    <div class="connection-banner">
-      {#if chatStore.reconnectAttempt > 0}
+  {#if chatStore.connectionState !== 'connected'}
+    <div class="connection-banner" class:connecting={chatStore.connectionState === 'connecting'}>
+      {#if chatStore.connectionState === 'connecting'}
+        Connecting...
+      {:else if chatStore.reconnectAttempt > 0}
         Reconnecting... (attempt {chatStore.reconnectAttempt})
       {:else if chatStore.lastError}
         {chatStore.lastError}
@@ -132,6 +134,10 @@ Shift+Enter — New line`);
     color: var(--text-secondary);
     background: rgba(229, 57, 53, 0.08);
     border-radius: var(--radius-md);
+  }
+
+  .connection-banner.connecting {
+    background: rgba(255, 193, 7, 0.08);
   }
 
   .input-wrapper {

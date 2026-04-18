@@ -110,10 +110,44 @@ export type ClientEnvelope =
   | PingEnvelope
   | AuthEnvelope;
 
+const VALID_BLOCK_TYPES = new Set(['text', 'code', 'thinking', 'tool_call', 'tool_result']);
+
+function isValidEnvelope(parsed: Record<string, unknown>): boolean {
+  const t = parsed.type as string;
+  switch (t) {
+    case 'welcome':
+      return typeof parsed.id === 'string' && typeof parsed.client_id === 'string' && typeof parsed.server_version === 'string';
+    case 'message':
+    case 'pong':
+      return typeof parsed.id === 'string';
+    case 'error':
+      return typeof parsed.id === 'string' && typeof parsed.code === 'string';
+    case 'streaming':
+      return typeof parsed.id === 'string' && typeof parsed.chunk === 'string' && typeof parsed.done === 'boolean';
+    case 'response_start':
+      return typeof parsed.id === 'string';
+    case 'block_start':
+      return typeof parsed.id === 'string' && typeof parsed.response_id === 'string' && VALID_BLOCK_TYPES.has(parsed.block_type as string);
+    case 'block_delta':
+      return typeof parsed.id === 'string' && typeof parsed.response_id === 'string' && typeof parsed.content === 'string';
+    case 'block_end':
+      return typeof parsed.id === 'string' && typeof parsed.response_id === 'string';
+    case 'response_end':
+      return typeof parsed.id === 'string';
+    case 'image':
+      return typeof parsed.id === 'string' && typeof parsed.url === 'string';
+    case 'typing':
+      return true;
+    default:
+      return false;
+  }
+}
+
 export function parseEnvelope(raw: string): ServerEnvelope | null {
   try {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed.type !== 'string') return null;
+    if (!isValidEnvelope(parsed)) return null;
     return parsed as ServerEnvelope;
   } catch {
     return null;
