@@ -125,4 +125,10 @@
       max-width: 85%;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .error-block.streaming {
+      animation: none;
+    }
+  }
 </style>

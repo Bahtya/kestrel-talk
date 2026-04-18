@@ -101,4 +101,10 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor {
+      animation: none;
+    }
+  }
 </style>

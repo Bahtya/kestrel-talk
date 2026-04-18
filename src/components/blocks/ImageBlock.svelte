@@ -88,4 +88,10 @@
     color: var(--text-meta);
     font-size: 13px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner {
+      animation: none;
+    }
+  }
 </style>

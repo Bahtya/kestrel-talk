@@ -271,4 +271,11 @@
       padding: 2px 12px;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typing-dots span {
+      animation: none;
+      opacity: 0.7;
+    }
+  }
 </style>
