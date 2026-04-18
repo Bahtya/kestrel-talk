@@ -2,6 +2,8 @@
   import type { ChatMessage } from '../../lib/state/types';
   import TextBlock from '../blocks/TextBlock.svelte';
   import CodeBlock from '../blocks/CodeBlock.svelte';
+  import ThinkingBlock from '../blocks/ThinkingBlock.svelte';
+  import ToolBlock from '../blocks/ToolBlock.svelte';
 
   interface Props {
     message: ChatMessage;
@@ -23,6 +25,12 @@
     {#each message.blocks as block (block.id)}
       {#if block.blockType === 'code'}
         <CodeBlock code={block.content} language={block.language} />
+      {:else if block.blockType === 'thinking'}
+        <ThinkingBlock content={block.content} />
+      {:else if block.blockType === 'tool_call'}
+        <ToolBlock content={block.content} />
+      {:else if block.blockType === 'tool_result'}
+        <ToolBlock content={block.content} isResult={true} />
       {:else}
         <TextBlock content={block.content} />
       {/if}

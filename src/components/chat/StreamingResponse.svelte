@@ -2,6 +2,8 @@
   import type { ActiveResponse } from '../../lib/state/types';
   import TextBlock from '../blocks/TextBlock.svelte';
   import StreamingCodeBlock from '../blocks/StreamingCodeBlock.svelte';
+  import ThinkingBlock from '../blocks/ThinkingBlock.svelte';
+  import ToolBlock from '../blocks/ToolBlock.svelte';
 
   interface Props {
     response: ActiveResponse;
@@ -22,6 +24,12 @@
             language={block.language}
             done={block.status === 'done'}
           />
+        {:else if block.blockType === 'thinking'}
+          <ThinkingBlock content={block.content} streaming={block.status === 'streaming'} />
+        {:else if block.blockType === 'tool_call'}
+          <ToolBlock content={block.content} streaming={block.status === 'streaming'} />
+        {:else if block.blockType === 'tool_result'}
+          <ToolBlock content={block.content} isResult={true} streaming={block.status === 'streaming'} />
         {:else}
           <div class="streaming-block">
             <TextBlock content={block.content} streaming={block.status === 'streaming'} />
