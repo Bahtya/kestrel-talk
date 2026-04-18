@@ -4,7 +4,8 @@ import type { ConnectionState } from '../state/types';
 
 const PING_INTERVAL = 30000;
 const CONNECT_TIMEOUT = 10000;
-const DEFAULT_URL = 'ws://127.0.0.1:8090';
+const DEFAULT_URL = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8090';
+const DEFAULT_TOKEN = import.meta.env.VITE_AUTH_TOKEN || undefined;
 
 type EnvelopeHandler = (envelope: ServerEnvelope) => void;
 type StateHandler = (state: ConnectionState) => void;
@@ -23,7 +24,7 @@ export class WsConnection {
 
   constructor(url = DEFAULT_URL, token?: string) {
     this.url = url;
-    this.token = token;
+    this.token = token ?? DEFAULT_TOKEN;
     this.reconnect = new ReconnectStrategy();
   }
 

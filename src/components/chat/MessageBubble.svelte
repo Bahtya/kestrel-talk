@@ -6,6 +6,7 @@
   import ToolBlock from '../blocks/ToolBlock.svelte';
   import ImageBlock from '../blocks/ImageBlock.svelte';
   import { formatTime } from '../../lib/utils/time';
+  import { chatStore } from '../../lib/state/chat-store.svelte';
 
   interface Props {
     message: ChatMessage;
@@ -48,7 +49,13 @@
           <ImageBlock src={block.imageUrl ?? ''} caption={block.imageCaption} />
         {:else if block.blockType === 'error'}
           <div class="error-block">
-            <span class="error-code">{block.errorCode ?? 'error'}</span>
+            <div class="error-header">
+              <span class="error-code">{block.errorCode ?? 'error'}</span>
+              <button class="retry-btn" onclick={() => chatStore.retry(message.id)} aria-label="Retry">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" /></svg>
+                Retry
+              </button>
+            </div>
             <span class="error-text">{block.content}</span>
           </div>
         {:else}
@@ -183,6 +190,13 @@
     font-size: 13px;
   }
 
+  .error-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
   .error-code {
     font-weight: 600;
     color: var(--danger);
@@ -193,6 +207,24 @@
 
   .error-text {
     color: var(--text-secondary);
+  }
+
+  .retry-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(229, 57, 53, 0.15);
+    border: 1px solid rgba(229, 57, 53, 0.3);
+    color: var(--danger);
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--duration-fast);
+  }
+
+  .retry-btn:hover {
+    background: rgba(229, 57, 53, 0.25);
   }
 
   @media (max-width: 768px) {

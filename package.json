@@ -2,6 +2,15 @@
   "name": "kestrel-talk",
   "private": true,
   "version": "0.1.0",
+  "description": "Web UI for kestrel-agent — real-time streaming chat client with Telegram-like UX",
+  "keywords": ["chat", "websocket", "streaming", "svelte", "ai", "agent"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bahtya/kestrel-talk.git"
+  },
+  "bugs": "https://github.com/Bahtya/kestrel-talk/issues",
+  "homepage": "https://github.com/Bahtya/kestrel-talk#readme",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
