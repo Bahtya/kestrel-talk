@@ -3,6 +3,7 @@ import { createMessage, type ServerEnvelope } from '../ws/protocol';
 import type { ConnectionState, ChatMessage, Block, ActiveResponse } from './types';
 import { saveMessages, loadMessages } from '../utils/storage';
 import { playNotification, playSend } from '../utils/notify';
+import { showNotification } from '../utils/browser-notify';
 
 class ChatStore {
   connectionState = $state<ConnectionState>('disconnected');
@@ -212,6 +213,7 @@ class ChatStore {
     this.isTyping = false;
     this.persist();
     playNotification();
+    showNotification('kestrel-agent', msg.content.slice(0, 100));
   }
 
   private handleError(id: string, code: string, content: string): void {

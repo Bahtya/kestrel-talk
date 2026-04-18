@@ -4,9 +4,11 @@
   import Sidebar from './components/layout/Sidebar.svelte';
   import ChatArea from './components/layout/ChatArea.svelte';
   import { chatStore } from './lib/state/chat-store.svelte';
+  import { initNotifications } from './lib/utils/browser-notify';
 
   onMount(() => {
     chatStore.connect();
+    initNotifications();
   });
 </script>
 
