@@ -56,11 +56,10 @@ const responses = [
   },
 ];
 
-let responseIndex = 0;
-
 wss.on('connection', (ws, req) => {
   const clientId = crypto.randomUUID();
   let authenticated = !AUTH_TOKEN;
+  let responseIndex = 0;
 
   console.log(`Client connected: ${clientId}`);
 
@@ -71,18 +70,101 @@ wss.on('connection', (ws, req) => {
     authenticated = true;
   }
 
+  function sendWelcome() {
+    send({ type: 'welcome', id: uuid(), client_id: clientId, server_version: '0.2.0-mock' });
+  }
+
+  function handleMessage(data) {
+    const raw = data.toString();
+    let msg;
+    try { msg = JSON.parse(raw); } catch { return; }
+
+    if (msg.type === 'ping') {
+      send({ type: 'pong', id: uuid() });
+      return;
+    }
+
+    if (msg.type === 'message') {
+      console.log(`[${clientId}] User: ${msg.content}`);
+      handleUserMessage(msg);
+    }
+  }
+
+  async function handleUserMessage(msg) {
+    const response = responses[responseIndex % responses.length];
+    responseIndex++;
+
+    send({ type: 'typing' });
+    await delay(200);
+
+    // v1 simple streaming mode
+    if (response.v1) {
+      const content = response.content;
+      const chunkSize = 12;
+      const id = uuid();
+
+      for (let i = 0; i < content.length; i += chunkSize) {
+        const chunk = content.slice(i, i + chunkSize);
+        send({ type: 'streaming', id, chunk, done: false });
+        await delay(15);
+      }
+      send({ type: 'streaming', id, chunk: '', done: true });
+      return;
+    }
+
+    // v2 block-level streaming
+    const responseId = uuid();
+
+    send({ type: 'response_start', id: responseId, reply_to: msg.id });
+
+    for (const block of response.blocks) {
+      const blockId = uuid();
+
+      send({
+        type: 'block_start',
+        id: blockId,
+        response_id: responseId,
+        block_type: block.type,
+        language: block.language ?? null,
+      });
+
+      const content = block.content;
+      const chunkSize = 8;
+      for (let i = 0; i < content.length; i += chunkSize) {
+        const chunk = content.slice(i, i + chunkSize);
+        send({
+          type: 'block_delta',
+          id: blockId,
+          response_id: responseId,
+          content: chunk,
+        });
+        await delay(10);
+      }
+
+      send({ type: 'block_end', id: blockId, response_id: responseId });
+      await delay(50);
+    }
+
+    send({ type: 'response_end', id: responseId });
+  }
+
+  function send(data) {
+    if (ws.readyState === 1) {
+      ws.send(JSON.stringify(data));
+    }
+  }
+
   if (!authenticated) {
-    // Wait for auth message
     const authHandler = (data) => {
       try {
         const msg = JSON.parse(data.toString());
         if (msg.type === 'auth' && msg.token === AUTH_TOKEN) {
           authenticated = true;
           ws.removeListener('message', authHandler);
-          sendWelcome(ws, clientId);
-          ws.on('message', (d) => handleMessage(ws, d, clientId));
+          sendWelcome();
+          ws.on('message', handleMessage);
         } else {
-          send(ws, { type: 'error', id: uuid(), code: 'auth_required', content: 'Authentication failed' });
+          send({ type: 'error', id: uuid(), code: 'auth_required', content: 'Authentication failed' });
           ws.close();
         }
       } catch { /* ignore */ }
@@ -91,97 +173,13 @@ wss.on('connection', (ws, req) => {
     return;
   }
 
-  sendWelcome(ws, clientId);
-  ws.on('message', (d) => handleMessage(ws, d, clientId));
+  sendWelcome();
+  ws.on('message', handleMessage);
 
   ws.on('close', () => {
     console.log(`Client disconnected: ${clientId}`);
   });
 });
-
-function sendWelcome(ws, clientId) {
-  send(ws, { type: 'welcome', id: uuid(), client_id: clientId, server_version: '0.2.0-mock' });
-}
-
-function handleMessage(ws, data, clientId) {
-  const raw = data.toString();
-  let msg;
-  try { msg = JSON.parse(raw); } catch { return; }
-
-  if (msg.type === 'ping') {
-    send(ws, { type: 'pong', id: uuid() });
-    return;
-  }
-
-  if (msg.type === 'message') {
-    console.log(`[${clientId}] User: ${msg.content}`);
-    handleUserMessage(ws, msg);
-  }
-}
-
-async function handleUserMessage(ws, msg) {
-  const response = responses[responseIndex % responses.length];
-  responseIndex++;
-
-  send(ws, { type: 'typing' });
-  await delay(300);
-
-  // v1 simple streaming mode
-  if (response.v1) {
-    const content = response.content;
-    const chunkSize = 12;
-    const id = uuid();
-
-    for (let i = 0; i < content.length; i += chunkSize) {
-      const chunk = content.slice(i, i + chunkSize);
-      send(ws, { type: 'streaming', id, chunk, done: false });
-      await delay(20);
-    }
-    send(ws, { type: 'streaming', id, chunk: '', done: true });
-    return;
-  }
-
-  // v2 block-level streaming
-  const responseId = uuid();
-
-  send(ws, { type: 'response_start', id: responseId, reply_to: msg.id });
-
-  for (const block of response.blocks) {
-    const blockId = uuid();
-
-    send(ws, {
-      type: 'block_start',
-      id: blockId,
-      response_id: responseId,
-      block_type: block.type,
-      language: block.language ?? null,
-    });
-
-    const content = block.content;
-    const chunkSize = 6;
-    for (let i = 0; i < content.length; i += chunkSize) {
-      const chunk = content.slice(i, i + chunkSize);
-      send(ws, {
-        type: 'block_delta',
-        id: blockId,
-        response_id: responseId,
-        content: chunk,
-      });
-      await delay(15);
-    }
-
-    send(ws, { type: 'block_end', id: blockId, response_id: responseId });
-    await delay(80);
-  }
-
-  send(ws, { type: 'response_end', id: responseId });
-}
-
-function send(ws, data) {
-  if (ws.readyState === 1) {
-    ws.send(JSON.stringify(data));
-  }
-}
 
 function uuid() {
   return crypto.randomUUID();
