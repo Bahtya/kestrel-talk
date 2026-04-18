@@ -167,9 +167,7 @@
   .close-btn:hover {
     background: var(--bg-hover);
   }
-</style>
 
-<style>
   :global(.search-highlight-active) {
     outline: 2px solid var(--accent);
     outline-offset: 4px;
