@@ -21,7 +21,7 @@ vi.mock('../lib/utils/storage', () => ({
 
 vi.mock('../lib/ws/connection', () => {
   return {
-    WsConnection: vi.fn().mockImplementation(function () {
+    WsConnection: vi.fn().mockImplementation(function (this: Record<string, unknown>) {
       this.onStateChange = vi.fn();
       this.onEnvelope = vi.fn();
       this.connect = vi.fn();
@@ -212,7 +212,7 @@ describe('ChatStore', () => {
 
       // @ts-expect-error test access
       store.handleEnvelope({ type: 'streaming', id: 'v1-1', chunk: 'world', done: false });
-      const block = store.activeResponse!.blocks.values().next().value;
+      const block = store.activeResponse!.blocks.values().next().value!;
       expect(block.content).toBe('Hello world');
 
       // @ts-expect-error test access

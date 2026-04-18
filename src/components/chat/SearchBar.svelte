@@ -46,8 +46,15 @@
   function scrollToMatch() {
     const match = matches[currentIndex];
     if (!match) return;
+    // Remove previous highlight
+    document.querySelectorAll('.search-highlight-active').forEach((el) => {
+      el.classList.remove('search-highlight-active');
+    });
     const el = document.querySelector(`[data-message-id="${match.messageId}"]`);
-    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('search-highlight-active');
+    }
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -159,5 +166,20 @@
 
   .close-btn:hover {
     background: var(--bg-hover);
+  }
+</style>
+
+<style>
+  :global(.search-highlight-active) {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: var(--radius-bubble);
+    transition: outline-color 0.3s;
+    animation: highlight-pulse 2s ease-out;
+  }
+
+  @keyframes highlight-pulse {
+    0% { outline-color: var(--accent); }
+    100% { outline-color: transparent; }
   }
 </style>
