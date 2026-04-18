@@ -1,3 +1,5 @@
+import { loadSetting } from './storage';
+
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext {
@@ -6,6 +8,7 @@ function getCtx(): AudioContext {
 }
 
 export function playNotification() {
+  if (loadSetting('soundEnabled', 'true') !== 'true') return;
   try {
     const ctx = getCtx();
     const osc = ctx.createOscillator();
@@ -22,6 +25,7 @@ export function playNotification() {
 }
 
 export function playSend() {
+  if (loadSetting('soundEnabled', 'true') !== 'true') return;
   try {
     const ctx = getCtx();
     const osc = ctx.createOscillator();

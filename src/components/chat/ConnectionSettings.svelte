@@ -4,6 +4,8 @@
 
   let wsUrl = $state(loadSetting('wsUrl', 'ws://127.0.0.1:8090'));
   let authToken = $state(loadSetting('authToken', ''));
+  let soundEnabled = $state(loadSetting('soundEnabled', 'true') === 'true');
+  let notifEnabled = $state(loadSetting('notifEnabled', 'true') === 'true');
   let showSettings = $state(false);
 
   function save() {
@@ -13,6 +15,16 @@
     chatStore.disconnect();
     chatStore.updateConnection(wsUrl, authToken || undefined);
     chatStore.connect();
+  }
+
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    saveSetting('soundEnabled', String(soundEnabled));
+  }
+
+  function toggleNotif() {
+    notifEnabled = !notifEnabled;
+    saveSetting('notifEnabled', String(notifEnabled));
   }
 </script>
 
@@ -26,7 +38,7 @@
   {#if showSettings}
     <div class="settings-panel">
       <div class="settings-header">
-        <span>Connection Settings</span>
+        <span>Settings</span>
         <button class="close-btn" onclick={() => { showSettings = false; }} aria-label="Close settings">&times;</button>
       </div>
 
@@ -39,6 +51,20 @@
         <span class="label">Auth Token (optional)</span>
         <input type="password" bind:value={authToken} placeholder="Leave empty if no auth" />
       </label>
+
+      <div class="toggle-row">
+        <span class="label">Notification sounds</span>
+        <button class="toggle" class:active={soundEnabled} onclick={toggleSound} aria-label="Toggle sounds" role="switch" aria-checked={soundEnabled}>
+          <span class="toggle-thumb"></span>
+        </button>
+      </div>
+
+      <div class="toggle-row">
+        <span class="label">Desktop notifications</span>
+        <button class="toggle" class:active={notifEnabled} onclick={toggleNotif} aria-label="Toggle notifications" role="switch" aria-checked={notifEnabled}>
+          <span class="toggle-thumb"></span>
+        </button>
+      </div>
 
       <div class="settings-actions">
         <button class="save-btn" onclick={save}>Save & Reconnect</button>
@@ -167,5 +193,47 @@
 
   .clear-btn:hover {
     background: var(--bg-hover);
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+
+  .toggle-row .label {
+    margin-bottom: 0;
+  }
+
+  .toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+  }
+
+  .toggle.active {
+    background: var(--accent);
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s;
+  }
+
+  .toggle.active .toggle-thumb {
+    transform: translateX(16px);
   }
 </style>

@@ -1,3 +1,5 @@
+import { loadSetting } from './storage';
+
 let permissionGranted = false;
 
 export async function initNotifications(): Promise<void> {
@@ -13,6 +15,7 @@ export async function initNotifications(): Promise<void> {
 }
 
 export function showNotification(title: string, body: string): void {
+  if (loadSetting('notifEnabled', 'true') !== 'true') return;
   if (!permissionGranted) return;
   if (document.hasFocus()) return;
   try {

@@ -74,6 +74,12 @@
           Connect to kestrel-agent to start chatting
         {/if}
       </div>
+      <div class="empty-hints">
+        <span class="hint"><kbd>Enter</kbd> Send</span>
+        <span class="hint"><kbd>Ctrl+F</kbd> Search</span>
+        <span class="hint"><kbd>↑↓</kbd> History</span>
+        <span class="hint"><kbd>/help</kbd> Commands</span>
+      </div>
     </div>
   {/if}
 
@@ -154,6 +160,32 @@
   .empty-text {
     color: var(--text-secondary);
     font-size: 14px;
+  }
+
+  .empty-hints {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-meta);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .hint kbd {
+    background: var(--bg-hover);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--text-secondary);
   }
 
   .typing-row {
