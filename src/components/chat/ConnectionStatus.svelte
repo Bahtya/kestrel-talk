@@ -1,5 +1,5 @@
 <script lang="ts">
-  let status = $state<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+  import { chatStore } from '../../lib/state/chat-store.svelte';
 
   const labels: Record<string, string> = {
     disconnected: 'Disconnected',
@@ -17,8 +17,8 @@
 </script>
 
 <div class="connection-status">
-  <span class="status-dot" style="background: {colors[status]}"></span>
-  <span class="status-text">{labels[status]}</span>
+  <span class="status-dot" style="background: {colors[chatStore.connectionState]}"></span>
+  <span class="status-text">{labels[chatStore.connectionState]}</span>
 </div>
 
 <style>

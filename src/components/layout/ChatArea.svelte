@@ -1,19 +1,24 @@
 <script lang="ts">
   import MessageInput from '../chat/MessageInput.svelte';
+  import { chatStore } from '../../lib/state/chat-store.svelte';
 
-  let messages: { id: string; role: string; content: string }[] = [];
+  function handleSend(text: string) {
+    chatStore.send(text);
+  }
 </script>
 
 <div class="chat-area">
   <header class="chat-header">
     <div class="chat-header-info">
       <div class="chat-header-name">kestrel-agent</div>
-      <div class="chat-header-status">waiting for connection</div>
+      <div class="chat-header-status">
+        {chatStore.isTyping ? 'typing...' : chatStore.connectionState === 'connected' ? 'online' : chatStore.connectionState}
+      </div>
     </div>
   </header>
 
   <div class="message-list">
-    {#if messages.length === 0}
+    {#if chatStore.messages.length === 0 && !chatStore.activeResponse}
       <div class="empty-state">
         <div class="empty-icon">K</div>
         <div class="empty-text">Connect to kestrel-agent to start chatting</div>
@@ -21,7 +26,7 @@
     {/if}
   </div>
 
-  <MessageInput onsend={(text) => {}} />
+  <MessageInput onsend={handleSend} />
 </div>
 
 <style>
