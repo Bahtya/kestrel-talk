@@ -14,23 +14,21 @@ Web UI for [kestrel-agent](https://github.com/Bahtya/kestrel-agent) — a real-t
 - **Auth support** — token-based WebSocket authentication
 - **Chat search** — Ctrl+F with match navigation and highlighting
 - **Input history** — ↑/↓ arrow keys to recall previous messages
-- **Slash commands** — `/clear` to reset chat history
+- **Slash commands** — `/clear`, `/help`
 - **Export chat** — download conversation as markdown
 - **Mobile responsive** — collapsible sidebar with overlay
+- **Notification sounds** — Web Audio API tones for send/receive
+- **Browser notifications** — desktop alerts when page is unfocused
+- **PWA** — installable with offline caching via service worker
 - **Accessibility** — ARIA labels, keyboard navigation, reduced motion, focus management
 - **Mock server** — test without kestrel-agent running
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Start mock server (simulates kestrel-agent)
-node mock-server.mjs
-
-# Start dev server (in another terminal)
-npm run dev
+node mock-server.mjs   # terminal 1 — mock kestrel-agent on :8090
+npm run dev            # terminal 2 — dev server on :3000
 ```
 
 Open `http://localhost:3000` and start chatting.
@@ -61,6 +59,7 @@ Block-level streaming protocol designed for real-time AI chat:
 | `tool_call` | Tool invocation request |
 | `tool_result` | Tool execution output |
 | `image` | Image with caption |
+| `error` | Error message with code |
 
 ### v1 Compatibility
 
@@ -71,6 +70,24 @@ Also supports simple streaming for backward compatibility:
 {"type": "streaming", "id": "uuid", "chunk": "", "done": true}
 ```
 
+## Testing
+
+```bash
+# Unit tests (66 tests, 8 files)
+npm test
+
+# Browser E2E tests (18 tests — real Chromium)
+npx playwright install chromium   # first time only
+npx playwright test
+
+# Protocol E2E tests (12 tests)
+node e2e-test.mjs
+```
+
+### Browser E2E coverage
+
+Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks.
+
 ## Commands
 
 | Command | Description |
@@ -80,7 +97,9 @@ Also supports simple streaming for backward compatibility:
 | `npm run preview` | Preview production build |
 | `npm test` | Run unit tests (vitest) |
 | `npm run test:watch` | Run tests in watch mode |
-| `node mock-server.mjs` | Start mock WebSocket server on :8090 |
+| `npx playwright test` | Browser E2E tests |
+| `node mock-server.mjs` | Mock WebSocket server on :8090 |
+| `node e2e-test.mjs` | Protocol E2E tests |
 
 ## Keyboard Shortcuts
 
@@ -99,6 +118,7 @@ Also supports simple streaming for backward compatibility:
 - shiki (syntax highlighting, lazy-loaded)
 - marked (markdown parsing)
 - DOMPurify (HTML sanitization)
+- Playwright (browser E2E testing)
 
 ## Architecture
 
@@ -107,18 +127,14 @@ src/
 ├── lib/
 │   ├── ws/          WebSocket connection, protocol, reconnection
 │   ├── state/       Svelte 5 reactive store, type definitions
-│   └── utils/       Markdown rendering, shiki highlighter, storage, scroll, time
+│   └── utils/       Markdown rendering, shiki, storage, scroll, time, notify
 ├── components/
 │   ├── layout/      Sidebar, ChatArea
-│   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse
+│   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar
 │   └── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
 └── __tests__/       Unit tests (66 tests, 8 files)
 ```
 
-## Testing
+## License
 
-```bash
-npm test            # 66 tests across 8 files
-# protocol, reconnect, html-sanitizer, markdown-v2, storage,
-# markdown rendering, scroll utils, time utils
-```
+MIT
