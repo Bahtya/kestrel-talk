@@ -8,6 +8,9 @@ const CORE_LANGS = [
   'css', 'html', 'json', 'bash', 'sql', 'go', 'java', 'c', 'cpp',
 ];
 
+const DARK_THEME = 'vitesse-dark';
+const LIGHT_THEME = 'vitesse-light';
+
 export async function getHighlighter(): Promise<Highlighter> {
   if (highlighterInstance) return highlighterInstance;
 
@@ -15,7 +18,7 @@ export async function getHighlighter(): Promise<Highlighter> {
 
   highlighterPromise = (async () => {
     const instance = await createHighlighter({
-      themes: ['vitesse-dark'],
+      themes: [DARK_THEME, LIGHT_THEME],
       langs: CORE_LANGS,
     });
     highlighterInstance = instance;
@@ -29,7 +32,12 @@ export async function highlightCode(code: string, lang: string): Promise<string>
   try {
     const highlighter = await getHighlighter();
     const resolvedLang = highlighter.getLoadedLanguages().includes(lang) ? lang : 'plaintext';
-    return highlighter.codeToHtml(code, { lang: resolvedLang, theme: 'vitesse-dark' });
+    return highlighter.codeToHtml(code, {
+      lang: resolvedLang,
+      themes: { light: LIGHT_THEME, dark: DARK_THEME },
+      defaultColor: false,
+      cssVariablePrefix: '--shiki-',
+    });
   } catch {
     return escapeHtml(code);
   }

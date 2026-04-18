@@ -8,6 +8,8 @@ const standardMarkdown = new Marked({
 });
 
 export function renderContent(content: string): string {
+  if (!content || !content.trim()) return '';
+
   // Level 1: HTML passthrough
   if (isHtml(content)) {
     return sanitizeHtml(content);

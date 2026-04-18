@@ -47,6 +47,11 @@ describe('renderContent', () => {
     expect(result).toContain('just some text');
   });
 
+  it('returns empty string for empty content', () => {
+    expect(renderContent('')).toBe('');
+    expect(renderContent('   ')).toBe('');
+  });
+
   it('renders markdown lists', () => {
     const result = renderContent('- item 1\n- item 2');
     expect(result).toContain('<li>');
