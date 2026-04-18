@@ -16,8 +16,12 @@
   };
 </script>
 
-<div class="connection-status">
-  <span class="status-dot" style="background: {colors[chatStore.connectionState]}"></span>
+<div class="connection-status" role="status" aria-live="polite">
+  <span
+    class="status-dot"
+    style="background: {colors[chatStore.connectionState]}"
+    aria-hidden="true"
+  ></span>
   <span class="status-text">{labels[chatStore.connectionState]}</span>
 </div>
 
@@ -33,10 +37,12 @@
     height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
+    transition: background 0.3s ease;
   }
 
   .status-text {
     font-size: 13px;
     color: var(--text-secondary);
+    transition: color 0.3s ease;
   }
 </style>

@@ -11,6 +11,7 @@
 </script>
 
 <ErrorBoundary>
+  <a href="#chat-messages" class="skip-link">Skip to chat</a>
   <div class="app-layout">
     <Sidebar />
     <ChatArea />

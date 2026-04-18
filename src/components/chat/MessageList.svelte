@@ -30,7 +30,7 @@
   });
 </script>
 
-<div class="message-list" bind:this={listEl}>
+<div class="message-list" bind:this={listEl} role="log" aria-label="Chat messages" aria-live="polite">
   {#if chatStore.messages.length === 0 && !chatStore.activeResponse}
     <div class="empty-state">
       <div class="empty-icon">K</div>
@@ -45,15 +45,19 @@
   {/if}
 
   {#each chatStore.messages as msg (msg.id)}
-    <MessageBubble message={msg} />
+    <div class="message-animate-in">
+      <MessageBubble message={msg} />
+    </div>
   {/each}
 
   {#if chatStore.activeResponse}
-    <StreamingResponse response={chatStore.activeResponse} />
+    <div class="message-animate-in">
+      <StreamingResponse response={chatStore.activeResponse} />
+    </div>
   {/if}
 
   {#if chatStore.isTyping && !chatStore.activeResponse}
-    <div class="typing-indicator">
+    <div class="typing-indicator" role="status" aria-label="Agent is typing">
       <div class="avatar">K</div>
       <div class="typing-dots">
         <span></span><span></span><span></span>
