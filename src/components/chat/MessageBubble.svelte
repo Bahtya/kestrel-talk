@@ -5,21 +5,31 @@
   import ThinkingBlock from '../blocks/ThinkingBlock.svelte';
   import ToolBlock from '../blocks/ToolBlock.svelte';
   import ImageBlock from '../blocks/ImageBlock.svelte';
+  import { formatFullTime, formatTime } from '../../lib/utils/time';
 
   interface Props {
     message: ChatMessage;
   }
 
   let { message }: Props = $props();
+  let copied = $state(false);
 
-  function formatTime(date: Date): string {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  async function copyMessage() {
+    const text = message.blocks.length > 0
+      ? message.blocks.map((b) => {
+          if (b.blockType === 'code' && b.language) return '```' + b.language + '\n' + b.content + '\n```';
+          return b.content;
+        }).join('\n\n')
+      : message.content;
+    await navigator.clipboard.writeText(text);
+    copied = true;
+    setTimeout(() => { copied = false; }, 2000);
   }
 </script>
 
 <div class="message-bubble" class:user={message.role === 'user'} class:assistant={message.role === 'assistant'} data-message-id={message.id}>
   {#if message.role === 'assistant'}
-    <div class="avatar">K</div>
+    <div class="avatar" aria-hidden="true">K</div>
   {/if}
 
   <div class="bubble-content">
@@ -45,7 +55,12 @@
     {:else}
       <TextBlock content={message.content} />
     {/each}
-    <div class="message-meta">{formatTime(message.timestamp)}</div>
+    <div class="message-footer">
+      <button class="copy-msg-btn" onclick={copyMessage} aria-label="Copy message">
+        {copied ? 'Copied!' : 'Copy'}
+      </button>
+      <time class="message-meta" title={formatTime(message.timestamp)}>{formatFullTime(message.timestamp)}</time>
+    </div>
   </div>
 </div>
 
@@ -93,11 +108,38 @@
     color: white;
   }
 
+  .message-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .copy-msg-btn {
+    background: none;
+    border: none;
+    color: var(--text-meta);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 1px 6px;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .message-bubble:hover .copy-msg-btn {
+    opacity: 1;
+  }
+
+  .copy-msg-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+  }
+
   .message-meta {
     font-size: 11px;
     color: var(--text-meta);
-    margin-top: 4px;
-    text-align: right;
   }
 
   .error-block {

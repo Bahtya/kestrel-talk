@@ -2,6 +2,33 @@
   import ConnectionStatus from '../chat/ConnectionStatus.svelte';
   import ConnectionSettings from '../chat/ConnectionSettings.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
+  import { formatTime } from '../../lib/utils/time';
+
+  function exportChat() {
+    if (chatStore.messages.length === 0) return;
+
+    const lines = chatStore.messages.map((msg) => {
+      const time = formatTime(msg.timestamp);
+      const role = msg.role === 'user' ? 'You' : 'Agent';
+      const body = msg.blocks.length > 0
+        ? msg.blocks.map((b) => {
+            if (b.blockType === 'code' && b.language) return '```' + b.language + '\n' + b.content + '\n```';
+            return b.content;
+          }).join('\n\n')
+        : msg.content;
+      return `[${time}] ${role}:\n${body}`;
+    });
+
+    const content = `# kestrel-talk Export\n${new Date().toISOString()}\n\n---\n\n` + lines.join('\n\n---\n\n');
+
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kestrel-talk-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 </script>
 
 <aside class="sidebar">
@@ -22,8 +49,15 @@
   </nav>
 
   <div class="sidebar-footer">
-    <ConnectionSettings />
-    <ConnectionStatus />
+    <div class="footer-left">
+      <ConnectionSettings />
+      <ConnectionStatus />
+    </div>
+    <button class="export-btn" onclick={exportChat} disabled={chatStore.messages.length === 0} aria-label="Export chat" title="Export chat as markdown">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+      </svg>
+    </button>
   </div>
 </aside>
 
@@ -118,5 +152,32 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .export-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .export-btn:hover:not(:disabled) {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .export-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
   }
 </style>
