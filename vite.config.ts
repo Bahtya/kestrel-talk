@@ -10,5 +10,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          shiki: ['shiki'],
+          markdown: ['marked', 'dompurify', 'isomorphic-dompurify'],
+        },
+      },
+    },
   },
 });

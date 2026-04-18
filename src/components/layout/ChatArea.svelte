@@ -31,7 +31,8 @@
 </div>
 
 {#if sidebarOpen}
-  <div class="sidebar-overlay" onclick={() => { sidebarOpen = false; }}></div>
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="sidebar-overlay" role="button" tabindex="-1" onclick={() => { sidebarOpen = false; }} onkeydown={(e) => { if (e.key === 'Escape') sidebarOpen = false; }}></div>
 {/if}
 
 <style>
