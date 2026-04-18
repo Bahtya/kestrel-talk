@@ -11,7 +11,20 @@
   let { content, isResult = false, toolName, streaming = false }: Props = $props();
   let expanded = $state(false);
 
-  let renderedHtml = $derived(renderContent(content));
+  let parsed = $derived.by(() => {
+    try {
+      const data = JSON.parse(content);
+      return {
+        toolName: data.tool ?? toolName ?? 'Tool',
+        args: data.query ?? data.args ?? data.params ?? null,
+        raw: null,
+      };
+    } catch {
+      return { toolName: toolName ?? 'Tool', args: null, raw: content };
+    }
+  });
+
+  let label = $derived(isResult ? 'Result' : parsed.toolName);
 </script>
 
 <details class="tool-block" class:result={isResult} bind:open={expanded}>
@@ -23,13 +36,17 @@
         <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" />
       {/if}
     </svg>
-    <span class="tool-label">{isResult ? 'Result' : toolName ?? 'Tool Call'}</span>
+    <span class="tool-label">{label}</span>
     {#if streaming}
       <span class="tool-badge">running</span>
     {/if}
   </summary>
   <div class="tool-content">
-    {@html renderedHtml}
+    {#if parsed.args}
+      <div class="tool-arg">{parsed.args}</div>
+    {:else if parsed.raw}
+      {@html renderContent(parsed.raw)}
+    {/if}
   </div>
 </details>
 
@@ -86,5 +103,12 @@
     line-height: 1.5;
     max-height: 300px;
     overflow-y: auto;
+  }
+
+  .tool-arg {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 </style>

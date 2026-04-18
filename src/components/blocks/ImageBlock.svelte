@@ -39,6 +39,7 @@
     border-radius: var(--radius-md);
     overflow: hidden;
     background: var(--bg-code);
+    position: relative;
   }
 
   img {

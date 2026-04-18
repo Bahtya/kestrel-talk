@@ -12,7 +12,6 @@ class ChatStore {
   isTyping = $state(false);
 
   private connection: WsConnection;
-  private v1StreamBuffer = $state('');
   private v1StreamId: string | null = null;
 
   constructor() {
@@ -234,19 +233,38 @@ class ChatStore {
   // --- v1 simple streaming compat ---
 
   private handleV1Streaming(id: string, chunk: string, done: boolean): void {
-    // If there's an active v2 response, ignore v1
     if (this.activeResponse) return;
 
     if (!this.v1StreamId) {
       this.v1StreamId = id;
-      this.v1StreamBuffer = '';
+      const blockId = crypto.randomUUID();
+      this.activeResponse = {
+        id,
+        replyTo: '',
+        blocks: new Map([[blockId, {
+          id: blockId,
+          responseId: id,
+          blockType: 'text' as const,
+          language: null,
+          content: '',
+          status: 'streaming' as const,
+        }]]),
+        blockOrder: [blockId],
+        status: 'streaming',
+      };
     }
 
-    this.v1StreamBuffer += chunk;
+    if (chunk) {
+      const blocks = new Map(this.activeResponse.blocks);
+      const block = blocks.values().next().value;
+      if (block) {
+        blocks.set(block.id, { ...block, content: block.content + chunk });
+        this.activeResponse = { ...this.activeResponse, blocks };
+      }
+    }
 
     if (done) {
-      this.handleCompleteMessage(id, this.v1StreamBuffer);
-      this.v1StreamBuffer = '';
+      this.handleResponseEnd(id);
       this.v1StreamId = null;
     }
   }
