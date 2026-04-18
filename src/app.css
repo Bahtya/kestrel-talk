@@ -39,6 +39,11 @@
   --duration-fast: 0.15s;
   --duration-normal: 0.2s;
   --duration-slow: 0.3s;
+
+  --z-overlay: 5;
+  --z-sidebar: 10;
+  --z-header: 20;
+  --z-toast: 100;
 }
 
 [data-theme="light"] {

@@ -180,7 +180,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.4);
-      z-index: 5;
+      z-index: var(--z-overlay);
     }
   }
 </style>

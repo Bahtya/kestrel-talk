@@ -34,7 +34,7 @@
     background: var(--accent);
     color: white;
     padding: 8px 16px;
-    z-index: 100;
+    z-index: var(--z-toast);
     font-size: 14px;
     border-radius: 0 0 var(--radius-sm) 0;
     text-decoration: none;
@@ -60,7 +60,7 @@
       left: 0;
       top: 0;
       bottom: 0;
-      z-index: 10;
+      z-index: var(--z-sidebar);
       width: 280px;
       transform: translateX(-100%);
       transition: transform 0.2s ease;

@@ -9,7 +9,7 @@
   let error = $state(false);
 </script>
 
-<div class="image-block">
+<div class="image-block" aria-busy={!loaded && !error} role="img" aria-label={caption || 'Image'}>
   {#if error}
     <div class="image-error">
       <span>Failed to load image</span>
@@ -17,7 +17,7 @@
   {:else}
     <img
       src={src}
-      alt={caption}
+      alt={caption || 'Image'}
       loading="lazy"
       onload={() => { loaded = true; }}
       onerror={() => { error = true; }}

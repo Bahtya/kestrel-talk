@@ -23,7 +23,7 @@
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 50;
+    z-index: var(--z-toast);
     display: flex;
     flex-direction: column;
     gap: 8px;

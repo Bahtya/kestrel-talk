@@ -91,14 +91,19 @@ Shift+Enter — New line`);
 <div class="input-area">
   {#if chatStore.connectionState !== 'connected'}
     <div class="connection-banner" class:connecting={chatStore.connectionState === 'connecting'}>
-      {#if chatStore.connectionState === 'connecting'}
-        Connecting...
-      {:else if chatStore.reconnectAttempt > 0}
-        Reconnecting... (attempt {chatStore.reconnectAttempt})
-      {:else if chatStore.lastError}
-        {chatStore.lastError}
-      {:else}
-        Waiting for connection...
+      <span>
+        {#if chatStore.connectionState === 'connecting'}
+          Connecting...
+        {:else if chatStore.reconnectAttempt > 0}
+          Reconnecting... (attempt {chatStore.reconnectAttempt})
+        {:else if chatStore.lastError}
+          {chatStore.lastError}
+        {:else}
+          Waiting for connection...
+        {/if}
+      </span>
+      {#if chatStore.connectionState === 'disconnected' || chatStore.connectionState === 'error'}
+        <button class="reconnect-btn" onclick={() => chatStore.connect()}>Reconnect</button>
       {/if}
     </div>
   {/if}
@@ -127,7 +132,10 @@ Shift+Enter — New line`);
   }
 
   .connection-banner {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     padding: 6px 12px;
     margin: 0 12px 6px;
     font-size: 13px;
@@ -138,6 +146,21 @@ Shift+Enter — New line`);
 
   .connection-banner.connecting {
     background: rgba(255, 193, 7, 0.08);
+  }
+
+  .reconnect-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 2px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background var(--duration-fast);
+  }
+
+  .reconnect-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .input-wrapper {
