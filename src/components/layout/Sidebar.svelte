@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ConnectionStatus from '../chat/ConnectionStatus.svelte';
   import ConnectionSettings from '../chat/ConnectionSettings.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
   import { formatTime } from '../../lib/utils/time';
@@ -29,34 +28,57 @@
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  let lastMsg = $derived(chatStore.messages.length > 0 ? chatStore.messages[chatStore.messages.length - 1] : null);
+  let lastMsgTime = $derived(lastMsg ? formatTime(lastMsg.timestamp) : '');
+  let lastMsgPreview = $derived(() => {
+    if (!lastMsg) return '';
+    const text = lastMsg.blocks.length > 0 ? lastMsg.blocks[lastMsg.blocks.length - 1].content : lastMsg.content;
+    return text.slice(0, 40).replace(/\n/g, ' ');
+  });
 </script>
 
 <aside class="sidebar">
   <div class="sidebar-header">
-    <h1 class="sidebar-title">kestrel-talk</h1>
+    <button class="menu-btn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" /></svg>
+    </button>
+    <div class="sidebar-search">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" class="search-icon"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+      <span class="search-placeholder">Search</span>
+    </div>
   </div>
 
-  <nav class="session-list" aria-label="Chat sessions">
-    <button class="session-item active" aria-current="true">
-      <div class="session-avatar" aria-hidden="true">K</div>
-      <div class="session-info">
-        <div class="session-name">kestrel-agent</div>
-        <div class="session-preview">
-          {chatStore.connectionState === 'connected' ? 'online' : chatStore.connectionState}
+  <nav class="chat-list" aria-label="Chat sessions">
+    <button class="chat-item active" aria-current="true">
+      <div class="chat-avatar" aria-hidden="true">
+        <span>K</span>
+      </div>
+      <div class="chat-info">
+        <div class="chat-row">
+          <span class="chat-name">kestrel-agent</span>
+          <span class="chat-time">{lastMsgTime}</span>
+        </div>
+        <div class="chat-row">
+          <span class="chat-preview">
+            {#if chatStore.connectionState === 'connected'}
+              {lastMsg ? lastMsgPreview() : 'No messages yet'}
+            {:else}
+              {chatStore.connectionState}
+            {/if}
+          </span>
+          {#if chatStore.connectionState === 'connected'}
+            <span class="online-dot"></span>
+          {/if}
         </div>
       </div>
     </button>
   </nav>
 
   <div class="sidebar-footer">
-    <div class="footer-left">
-      <ConnectionSettings />
-      <ConnectionStatus />
-    </div>
-    <button class="export-btn" onclick={exportChat} disabled={chatStore.messages.length === 0} aria-label="Export chat" title="Export chat as markdown">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-      </svg>
+    <ConnectionSettings />
+    <button class="footer-btn" onclick={exportChat} disabled={chatStore.messages.length === 0} aria-label="Export chat" title="Export chat">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
     </button>
   </div>
 </aside>
@@ -73,110 +95,173 @@
   }
 
   .sidebar-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    height: 56px;
   }
 
-  .sidebar-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
+  .menu-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    transition: background var(--duration-fast);
   }
 
-  .session-list {
+  .menu-btn:hover {
+    background: var(--bg-hover);
+  }
+
+  .sidebar-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-search);
+    border-radius: 22px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background var(--duration-fast);
+  }
+
+  .sidebar-search:hover {
+    background: var(--bg-hover);
+  }
+
+  .search-icon {
+    color: var(--text-meta);
+    flex-shrink: 0;
+  }
+
+  .search-placeholder {
+    color: var(--text-meta);
+    font-size: 14px;
+  }
+
+  .chat-list {
     flex: 1;
     overflow-y: auto;
-    padding: 8px;
+    padding: 0;
   }
 
-  .session-item {
+  .chat-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: background 0.15s;
+    padding: 8px 12px;
     width: 100%;
     border: none;
     background: none;
     text-align: left;
     font: inherit;
     color: inherit;
+    cursor: pointer;
+    transition: background var(--duration-fast);
   }
 
-  .session-item:hover {
+  .chat-item:hover {
     background: var(--bg-hover);
   }
 
-  .session-item.active {
-    background: var(--bg-hover);
+  .chat-item.active {
+    background: #2b5278;
   }
 
-  .session-avatar {
-    width: 44px;
-    height: 44px;
+  .chat-avatar {
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     background: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: white;
     flex-shrink: 0;
   }
 
-  .session-info {
-    overflow: hidden;
+  .chat-info {
+    flex: 1;
+    min-width: 0;
   }
 
-  .session-name {
-    font-size: 14px;
-    font-weight: 500;
+  .chat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .chat-row + .chat-row {
+    margin-top: 3px;
+  }
+
+  .chat-name {
+    font-size: 15px;
+    font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .session-preview {
-    font-size: 13px;
+  .chat-time {
+    font-size: 12px;
+    color: var(--text-meta);
+    flex-shrink: 0;
+  }
+
+  .chat-preview {
+    font-size: 14px;
     color: var(--text-secondary);
-    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-online);
+    flex-shrink: 0;
   }
 
   .sidebar-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
+    padding: 8px 12px;
+    border-top: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .footer-left {
-    display: flex;
-    align-items: center;
     gap: 8px;
   }
 
-  .export-btn {
+  .footer-btn {
     background: none;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.15s, color 0.15s;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background var(--duration-fast), color var(--duration-fast);
     flex-shrink: 0;
+    display: flex;
   }
 
-  .export-btn:hover:not(:disabled) {
+  .footer-btn:hover:not(:disabled) {
     background: var(--bg-hover);
     color: var(--text-primary);
   }
 
-  .export-btn:disabled {
+  .footer-btn:disabled {
     opacity: 0.3;
     cursor: default;
   }

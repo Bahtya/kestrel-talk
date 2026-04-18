@@ -17,6 +17,16 @@
       searchOpen = !searchOpen;
     }
   }
+
+  let statusText = $derived(() => {
+    if (chatStore.isTyping) return 'typing...';
+    if (chatStore.connectionState === 'connected') return 'online';
+    if (chatStore.connectionState === 'connecting') return 'connecting...';
+    if (chatStore.connectionState === 'error') return 'last seen recently';
+    return 'offline';
+  });
+
+  let isOnline = $derived(chatStore.connectionState === 'connected' && !chatStore.isTyping);
 </script>
 
 <svelte:window onkeydown={toggleSearch} />
@@ -24,21 +34,25 @@
 <div class="chat-area">
   <header class="chat-header">
     <button class="menu-btn" onclick={() => { sidebarOpen = !sidebarOpen; }} aria-label="Toggle sidebar">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-      </svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" /></svg>
     </button>
-    <div class="chat-header-info">
-      <div class="chat-header-name">kestrel-agent</div>
-      <div class="chat-header-status">
-        {chatStore.isTyping ? 'typing...' : chatStore.connectionState === 'connected' ? 'online' : chatStore.connectionState}
+    <div class="header-avatar">
+      <span>K</span>
+    </div>
+    <div class="header-info">
+      <div class="header-name">kestrel-agent</div>
+      <div class="header-status" class:online={isOnline}>
+        {statusText()}
       </div>
     </div>
-    <button class="search-btn" onclick={() => { searchOpen = !searchOpen; }} aria-label="Search messages">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-      </svg>
-    </button>
+    <div class="header-actions">
+      <button class="header-btn" onclick={() => { searchOpen = !searchOpen; }} aria-label="Search messages">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+      </button>
+      <button class="header-btn" aria-label="More options">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" /></svg>
+      </button>
+    </div>
   </header>
 
   {#if searchOpen}
@@ -66,55 +80,82 @@
   }
 
   .chat-header {
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 6px 16px;
+    height: 56px;
     background: var(--bg-sidebar);
+    border-bottom: none;
   }
 
   .menu-btn {
     display: none;
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background var(--duration-fast);
   }
 
   .menu-btn:hover {
     background: var(--bg-hover);
   }
 
-  .chat-header-info {
+  .header-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .header-info {
     flex: 1;
     min-width: 0;
   }
 
-  .chat-header-name {
+  .header-name {
     font-size: 15px;
     font-weight: 600;
+    line-height: 1.3;
   }
 
-  .chat-header-status {
+  .header-status {
     font-size: 13px;
     color: var(--text-secondary);
-    margin-top: 1px;
+    line-height: 1.3;
   }
 
-  .search-btn {
+  .header-status.online {
+    color: var(--accent-online);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .header-btn {
     background: none;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    flex-shrink: 0;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    transition: background var(--duration-fast), color var(--duration-fast);
   }
 
-  .search-btn:hover {
+  .header-btn:hover {
     background: var(--bg-hover);
     color: var(--text-primary);
   }
@@ -132,7 +173,7 @@
       display: block;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 5;
     }
   }

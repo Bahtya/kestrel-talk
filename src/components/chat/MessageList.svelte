@@ -14,8 +14,7 @@
   }
 
   async function autoScroll() {
-    if (!listEl) return;
-    if (userScrolledUp) return;
+    if (!listEl || userScrolledUp) return;
     await tick();
     scrollToBottom(listEl, true);
   }
@@ -37,6 +36,23 @@
       autoScroll();
     }
   });
+
+  function getDateLabel(date: Date): string {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const diff = today.getTime() - msgDate.getTime();
+    if (diff === 0) return 'Today';
+    if (diff <= 86400000) return 'Yesterday';
+    return date.toLocaleDateString([], { month: 'long', day: 'numeric' });
+  }
+
+  function shouldShowDate(messages: { timestamp: Date }[], index: number): boolean {
+    if (index === 0) return true;
+    const prev = messages[index - 1].timestamp;
+    const curr = messages[index].timestamp;
+    return prev.toDateString() !== curr.toDateString();
+  }
 </script>
 
 <svelte:window onkeydown={(e) => {
@@ -50,6 +66,7 @@
   {#if chatStore.messages.length === 0 && !chatStore.activeResponse}
     <div class="empty-state">
       <div class="empty-icon">K</div>
+      <div class="empty-title">kestrel-agent</div>
       <div class="empty-text">
         {#if chatStore.connectionState === 'connected'}
           Send a message to start chatting
@@ -60,7 +77,12 @@
     </div>
   {/if}
 
-  {#each chatStore.messages as msg (msg.id)}
+  {#each chatStore.messages as msg, i (msg.id)}
+    {#if shouldShowDate(chatStore.messages, i)}
+      <div class="date-separator">
+        <span>{getDateLabel(msg.timestamp)}</span>
+      </div>
+    {/if}
     <div class="message-animate-in">
       <MessageBubble message={msg} />
     </div>
@@ -73,10 +95,11 @@
   {/if}
 
   {#if chatStore.isTyping && !chatStore.activeResponse}
-    <div class="typing-indicator" role="status" aria-label="Agent is typing">
-      <div class="avatar">K</div>
-      <div class="typing-dots">
-        <span></span><span></span><span></span>
+    <div class="typing-row">
+      <div class="typing-bubble">
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
       </div>
     </div>
   {/if}
@@ -84,9 +107,7 @@
 
 {#if userScrolledUp}
   <button class="scroll-to-bottom" onclick={handleScrollToBottom} aria-label="Scroll to latest messages">
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-      <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-    </svg>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
   </button>
 {/if}
 
@@ -94,10 +115,11 @@
   .message-list {
     flex: 1;
     overflow-y: auto;
-    padding: 16px 20px;
+    padding: 8px 0;
     display: flex;
     flex-direction: column;
     position: relative;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231c2a3a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") var(--bg-chat);
   }
 
   .empty-state {
@@ -106,21 +128,27 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    gap: 16px;
+    gap: 12px;
   }
 
   .empty-icon {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     background: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 48px;
     font-weight: 700;
     color: white;
-    opacity: 0.6;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
   }
 
   .empty-text {
@@ -128,39 +156,42 @@
     font-size: 14px;
   }
 
-  .typing-indicator {
+  .typing-row {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    padding: 2px 60px;
   }
 
-  .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    flex-shrink: 0;
+  .typing-bubble {
+    background: var(--bg-assistant-bubble);
+    padding: 10px 16px;
+    border-radius: var(--radius-bubble);
+    border-top-left-radius: 4px;
+    position: relative;
+    max-width: 80px;
+  }
+
+  .typing-bubble::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 8px 8px 0;
+    border-color: transparent var(--bg-assistant-bubble) transparent transparent;
   }
 
   .typing-dots {
-    background: var(--bg-assistant-bubble);
-    padding: 12px 16px;
-    border-radius: var(--radius-lg);
-    border-top-left-radius: 4px;
     display: flex;
     gap: 4px;
+    align-items: center;
+    justify-content: center;
   }
 
   .typing-dots span {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--text-secondary);
     animation: typing-bounce 1.4s infinite ease-in-out;
@@ -178,9 +209,9 @@
   .scroll-to-bottom {
     position: absolute;
     bottom: 12px;
-    right: 28px;
-    width: 36px;
-    height: 36px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: none;
     background: var(--bg-sidebar);
@@ -189,13 +220,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    transition: background var(--duration-fast), transform var(--duration-fast);
     z-index: 2;
   }
 
   .scroll-to-bottom:hover {
     background: var(--bg-hover);
     transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    .message-list {
+      padding: 8px 0;
+    }
+
+    .typing-row {
+      padding: 2px 12px;
+    }
   }
 </style>

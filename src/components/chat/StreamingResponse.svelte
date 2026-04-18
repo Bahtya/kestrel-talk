@@ -12,9 +12,8 @@
   let { response }: Props = $props();
 </script>
 
-<div class="streaming-response">
-  <div class="avatar">K</div>
-  <div class="response-content">
+<div class="streaming-row">
+  <div class="bubble">
     {#each response.blockOrder as blockId (blockId)}
       {@const block = response.blocks.get(blockId)}
       {#if block}
@@ -31,7 +30,7 @@
         {:else if block.blockType === 'tool_result'}
           <ToolBlock content={block.content} isResult={true} streaming={block.status === 'streaming'} />
         {:else}
-          <div class="streaming-block">
+          <div class="block-wrapper">
             <TextBlock content={block.content} streaming={block.status === 'streaming'} />
           </div>
         {/if}
@@ -41,40 +40,49 @@
 </div>
 
 <style>
-  .streaming-response {
+  .streaming-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-    max-width: 80%;
+    padding: 2px 60px;
   }
 
-  .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    flex-shrink: 0;
-  }
-
-  .response-content {
+  .bubble {
+    max-width: min(480px, 70%);
     background: var(--bg-assistant-bubble);
-    border-radius: var(--radius-lg);
+    padding: 6px 10px;
+    border-radius: var(--radius-bubble);
     border-top-left-radius: 4px;
-    padding: 10px 14px;
-    min-width: 40px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
-  .streaming-block {
-    margin-bottom: 8px;
+  .bubble::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 8px 8px 0;
+    border-color: transparent var(--bg-assistant-bubble) transparent transparent;
   }
 
-  .streaming-block:last-child {
+  .block-wrapper {
+    margin-bottom: 6px;
+  }
+
+  .block-wrapper:last-child {
     margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    .streaming-row {
+      padding: 2px 12px;
+    }
+
+    .bubble {
+      max-width: 85%;
+    }
   }
 </style>

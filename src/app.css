@@ -1,5 +1,5 @@
 :root {
-  /* Telegram Dark Theme */
+  /* Telegram Desktop Dark Theme — exact colors */
   --bg-sidebar: #17212b;
   --bg-chat: #0e1621;
   --bg-input: #17212b;
@@ -7,14 +7,20 @@
   --bg-assistant-bubble: #182533;
   --bg-hover: #202b36;
   --bg-code: #1a1a2e;
+  --bg-date-pill: rgba(0, 0, 0, 0.35);
+  --bg-search: #242f3d;
 
   --text-primary: #f5f5f5;
   --text-secondary: #8b9bab;
   --text-meta: #6c7883;
+  --text-link: #6ab2f2;
+  --text-bubble-time: rgba(255, 255, 255, 0.45);
 
   --accent: #5288c1;
   --accent-hover: #6ba1d6;
-  --border: #1c2a3a;
+  --accent-online: #4dcd5e;
+  --border: #0e1621;
+  --border-light: #1c2a3a;
   --danger: #e53935;
 
   --scrollbar-track: #0e1621;
@@ -26,6 +32,8 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 12px;
+  --radius-bubble: 12px;
+  --radius-input: 20px;
 
   --duration-fast: 0.15s;
   --duration-normal: 0.2s;
@@ -53,18 +61,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar */
+/* Scrollbar — Telegram style */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
+  background: transparent;
   border-radius: 3px;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -124,6 +136,23 @@ body {
   border: 0;
 }
 
+/* Date separator pill */
+.date-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.date-separator span {
+  background: var(--bg-date-pill);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .message-animate-in {
@@ -156,7 +185,7 @@ body {
   }
 
   .input-area,
-  .sidebar,
+  aside,
   .sidebar-overlay,
   .scroll-to-bottom,
   .chat-header,
@@ -181,15 +210,5 @@ body {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-  }
-
-  .message-bubble.user {
-    background: #e8f0fe;
-    color: #1a1a1a;
-  }
-
-  .message-bubble.assistant {
-    background: #f5f5f5;
-    color: #1a1a1a;
   }
 }
