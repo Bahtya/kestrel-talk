@@ -422,4 +422,92 @@ test.describe('kestrel-talk browser E2E', () => {
     // Just verify the app didn't crash
     await expect(page.locator('#app')).toBeVisible();
   });
+
+  test('22. Toast appears after /clear command', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    const textarea = page.locator('textarea');
+    await textarea.fill('message to clear');
+    await textarea.press('Enter');
+    await page.waitForTimeout(2000);
+
+    await textarea.fill('/clear');
+    await textarea.press('Enter');
+    await page.waitForTimeout(500);
+
+    // Toast should appear
+    const toast = page.locator('.toast').first();
+    await expect(toast).toBeVisible({ timeout: 3000 });
+    await expect(toast).toContainText('cleared');
+  });
+
+  test('23. Mobile sidebar toggles with hamburger', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Sidebar wrapper should be off-screen
+    const wrapper = page.locator('.sidebar-wrapper');
+    let transform = await wrapper.evaluate(el => getComputedStyle(el).transform);
+    expect(transform).not.toBe('none');
+
+    // Click hamburger in chat header
+    const menuBtn = page.locator('.chat-area .menu-btn');
+    await menuBtn.click();
+    await page.waitForTimeout(300);
+
+    // Sidebar should slide in (transform becomes identity)
+    transform = await wrapper.evaluate(el => getComputedStyle(el).transform);
+    expect(transform === 'none' || transform === 'matrix(1, 0, 0, 1, 0, 0)').toBe(true);
+
+    // Sidebar content should be visible
+    const chatItem = page.locator('.chat-item');
+    await expect(chatItem).toBeVisible();
+  });
+
+  test('24. Code blocks show line numbers', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    const textarea = page.locator('textarea');
+    await textarea.fill('skip');
+    await textarea.press('Enter');
+    await page.waitForTimeout(2000);
+    await textarea.fill('code');
+    await textarea.press('Enter');
+    await page.waitForTimeout(3000);
+
+    // Line numbers should be visible in code block
+    const lineNumbers = page.locator('.code-block .line-numbers').first();
+    await expect(lineNumbers).toBeVisible({ timeout: 10000 });
+    // Should have at least 2 line number spans
+    const spans = lineNumbers.locator('span');
+    const count = await spans.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+  });
+
+  test('25. Theme toggle switches between dark and light', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Default should be dark
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(theme).toBe('dark');
+
+    // Click theme toggle in sidebar footer
+    const themeBtn = page.locator('[aria-label="Toggle theme"]');
+    await themeBtn.click();
+    await page.waitForTimeout(300);
+
+    // Should switch to light
+    const newTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(newTheme).toBe('light');
+
+    // Toggle back
+    await themeBtn.click();
+    await page.waitForTimeout(300);
+    const backToDark = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(backToDark).toBe('dark');
+  });
 });
