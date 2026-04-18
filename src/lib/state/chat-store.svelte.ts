@@ -7,6 +7,7 @@ import { showNotification } from '../utils/browser-notify';
 
 class ChatStore {
   connectionState = $state<ConnectionState>('disconnected');
+  reconnectAttempt = $state(0);
   clientId = $state('');
   serverVersion = $state('');
   messages = $state<ChatMessage[]>([]);
@@ -25,6 +26,11 @@ class ChatStore {
     this.connection = new WsConnection();
     this.connection.onStateChange((state) => {
       this.connectionState = state;
+      if (state === 'connected') {
+        this.reconnectAttempt = 0;
+      } else if (state === 'disconnected' || state === 'error') {
+        this.reconnectAttempt++;
+      }
     });
     this.connection.onEnvelope((env) => this.handleEnvelope(env));
 

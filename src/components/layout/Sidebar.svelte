@@ -1,32 +1,11 @@
 <script lang="ts">
   import ConnectionSettings from '../chat/ConnectionSettings.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
+  import { exportChatAsMarkdown } from '../../lib/utils/export';
   import { formatTime } from '../../lib/utils/time';
 
   function exportChat() {
-    if (chatStore.messages.length === 0) return;
-
-    const lines = chatStore.messages.map((msg) => {
-      const time = formatTime(msg.timestamp);
-      const role = msg.role === 'user' ? 'You' : 'Agent';
-      const body = msg.blocks.length > 0
-        ? msg.blocks.map((b) => {
-            if (b.blockType === 'code' && b.language) return '```' + b.language + '\n' + b.content + '\n```';
-            return b.content;
-          }).join('\n\n')
-        : msg.content;
-      return `[${time}] ${role}:\n${body}`;
-    });
-
-    const content = `# kestrel-talk Export\n${new Date().toISOString()}\n\n---\n\n` + lines.join('\n\n---\n\n');
-
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `kestrel-talk-${new Date().toISOString().slice(0, 10)}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportChatAsMarkdown(chatStore.messages);
   }
 
   let lastMsg = $derived(chatStore.messages.length > 0 ? chatStore.messages[chatStore.messages.length - 1] : null);

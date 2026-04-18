@@ -25,6 +25,7 @@
 
   --scrollbar-track: #0e1621;
   --scrollbar-thumb: #2b3945;
+  --scrollbar-thumb-hover: #3d4f5f;
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
@@ -80,7 +81,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3d4f5f;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Message entry animation */
