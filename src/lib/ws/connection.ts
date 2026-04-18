@@ -41,6 +41,8 @@ export class WsConnection {
 
     try {
       this.ws = new WebSocket(this.url);
+      // @ts-expect-error test access
+      if (typeof window !== 'undefined') window.__test_ws = this.ws;
     } catch {
       this.setState('error');
       this.scheduleReconnect();

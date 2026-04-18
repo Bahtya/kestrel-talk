@@ -510,4 +510,32 @@ test.describe('kestrel-talk browser E2E', () => {
     const backToOriginal = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(backToOriginal).toBe(theme);
   });
+
+  test('26. Search highlight on matched message', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Send a message
+    const textarea = page.locator('textarea');
+    await textarea.fill('findable message');
+    await textarea.press('Enter');
+    await page.waitForTimeout(2000);
+
+    // Open search
+    await page.keyboard.press('Control+f');
+    await page.waitForTimeout(300);
+
+    // Type search query
+    const searchInput = page.locator('.search-bar input');
+    await searchInput.fill('findable');
+    await page.waitForTimeout(300);
+
+    // Press Enter to jump to first match
+    await searchInput.press('Enter');
+    await page.waitForTimeout(500);
+
+    // Matched message should have highlight class
+    const highlighted = page.locator('.search-highlight-active');
+    await expect(highlighted).toBeVisible({ timeout: 3000 });
+  });
 });
