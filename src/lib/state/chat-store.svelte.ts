@@ -293,7 +293,7 @@ class ChatStore {
       };
     }
 
-    if (chunk) {
+    if (chunk && this.activeResponse) {
       const blocks = new Map(this.activeResponse.blocks);
       const block = blocks.values().next().value;
       if (block) {

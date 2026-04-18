@@ -33,7 +33,7 @@ describe('scroll utils', () => {
   it('scrollToBottom calls scrollTo', () => {
     const el = createScrollable(200, 1000);
     let called = false;
-    el.scrollTo = (opts: ScrollToOptions) => { called = true; };
+    el.scrollTo = ((opts: ScrollToOptions | number) => { called = true; }) as typeof el.scrollTo;
     scrollToBottom(el, false);
     expect(called).toBe(true);
   });

@@ -29,6 +29,7 @@ describe('exportChatAsMarkdown', () => {
     exportChatAsMarkdown(messages);
 
     expect(mockCreateObjectURL).toHaveBeenCalledTimes(1);
+    // @ts-expect-error mock typing
     const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
     expect(blob.type).toBe('text/markdown');
     expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:test-url');
@@ -45,6 +46,7 @@ describe('exportChatAsMarkdown', () => {
 
     exportChatAsMarkdown(messages);
 
+    // @ts-expect-error mock typing
     const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
     const text = await blob.text();
     expect(text).toContain('You:');
@@ -65,6 +67,7 @@ describe('exportChatAsMarkdown', () => {
 
     exportChatAsMarkdown(messages);
 
+    // @ts-expect-error mock typing
     const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
     const text = await blob.text();
     expect(text).toContain('```rust');
@@ -79,6 +82,7 @@ describe('exportChatAsMarkdown', () => {
 
     exportChatAsMarkdown(messages);
 
+    // @ts-expect-error mock typing
     const blob = mockCreateObjectURL.mock.calls[0][0] as Blob;
     const text = await blob.text();
     expect(text).toContain('You:');
