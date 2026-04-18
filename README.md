@@ -8,10 +8,16 @@ Web UI for [kestrel-agent](https://github.com/Bahtya/kestrel-agent) — a real-t
 - **Real-time code highlighting** — shiki syntax highlighting with streaming support
 - **Telegram MarkdownV2** — underline, strikethrough, spoiler with fallback to standard markdown
 - **HTML passthrough** — sanitized HTML rendering
+- **Telegram UI** — dark theme, bubble tails, checkmarks, online status, date separators
 - **Auto-reconnect** — exponential backoff with message queue
 - **Message persistence** — localStorage with automatic save/load
 - **Auth support** — token-based WebSocket authentication
+- **Chat search** — Ctrl+F with match navigation and highlighting
+- **Input history** — ↑/↓ arrow keys to recall previous messages
+- **Slash commands** — `/clear` to reset chat history
+- **Export chat** — download conversation as markdown
 - **Mobile responsive** — collapsible sidebar with overlay
+- **Accessibility** — ARIA labels, keyboard navigation, reduced motion, focus management
 - **Mock server** — test without kestrel-agent running
 
 ## Quick Start
@@ -76,10 +82,21 @@ Also supports simple streaming for backward compatibility:
 | `npm run test:watch` | Run tests in watch mode |
 | `node mock-server.mjs` | Start mock WebSocket server on :8090 |
 
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Enter` | Send message |
+| `Shift+Enter` | New line |
+| `↑` / `↓` | Navigate input history |
+| `Ctrl+F` | Search messages |
+| `Escape` | Close search/sidebar |
+| `End` | Scroll to bottom |
+
 ## Tech Stack
 
 - Svelte 5 + Vite + TypeScript
-- shiki (syntax highlighting)
+- shiki (syntax highlighting, lazy-loaded)
 - marked (markdown parsing)
 - DOMPurify (HTML sanitization)
 
@@ -90,10 +107,18 @@ src/
 ├── lib/
 │   ├── ws/          WebSocket connection, protocol, reconnection
 │   ├── state/       Svelte 5 reactive store, type definitions
-│   └── utils/       Markdown rendering, shiki highlighter, storage
+│   └── utils/       Markdown rendering, shiki highlighter, storage, scroll, time
 ├── components/
 │   ├── layout/      Sidebar, ChatArea
 │   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse
 │   └── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
-└── __tests__/       Unit tests
+└── __tests__/       Unit tests (66 tests, 8 files)
+```
+
+## Testing
+
+```bash
+npm test            # 66 tests across 8 files
+# protocol, reconnect, html-sanitizer, markdown-v2, storage,
+# markdown rendering, scroll utils, time utils
 ```
