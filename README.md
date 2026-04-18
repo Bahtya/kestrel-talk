@@ -113,6 +113,7 @@ Real browser tests verifying: empty state, WebSocket connection, online status, 
 | `Shift+Enter` | New line |
 | `↑` / `↓` | Navigate input history |
 | `Ctrl+F` | Search messages |
+| `Ctrl+Shift+T` | Toggle theme |
 | `Escape` | Close search/sidebar |
 | `End` | Scroll to bottom |
 
