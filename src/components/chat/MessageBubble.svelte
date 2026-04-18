@@ -17,7 +17,7 @@
   }
 </script>
 
-<div class="message-bubble" class:user={message.role === 'user'} class:assistant={message.role === 'assistant'}>
+<div class="message-bubble" class:user={message.role === 'user'} class:assistant={message.role === 'assistant'} data-message-id={message.id}>
   {#if message.role === 'assistant'}
     <div class="avatar">K</div>
   {/if}

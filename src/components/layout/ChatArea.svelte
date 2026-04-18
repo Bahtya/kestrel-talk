@@ -1,14 +1,25 @@
 <script lang="ts">
   import MessageList from '../chat/MessageList.svelte';
   import MessageInput from '../chat/MessageInput.svelte';
+  import SearchBar from '../chat/SearchBar.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
 
   let sidebarOpen = $state(false);
+  let searchOpen = $state(false);
 
   function handleSend(text: string) {
     chatStore.send(text);
   }
+
+  function toggleSearch(e: KeyboardEvent) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+      e.preventDefault();
+      searchOpen = !searchOpen;
+    }
+  }
 </script>
+
+<svelte:window onkeydown={toggleSearch} />
 
 <div class="chat-area">
   <header class="chat-header">
@@ -23,7 +34,16 @@
         {chatStore.isTyping ? 'typing...' : chatStore.connectionState === 'connected' ? 'online' : chatStore.connectionState}
       </div>
     </div>
+    <button class="search-btn" onclick={() => { searchOpen = !searchOpen; }} aria-label="Search messages">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+      </svg>
+    </button>
   </header>
+
+  {#if searchOpen}
+    <SearchBar onclose={() => { searchOpen = false; }} />
+  {/if}
 
   <MessageList />
 
@@ -68,6 +88,11 @@
     background: var(--bg-hover);
   }
 
+  .chat-header-info {
+    flex: 1;
+    min-width: 0;
+  }
+
   .chat-header-name {
     font-size: 15px;
     font-weight: 600;
@@ -77,6 +102,21 @@
     font-size: 13px;
     color: var(--text-secondary);
     margin-top: 1px;
+  }
+
+  .search-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .search-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
   }
 
   .sidebar-overlay {
