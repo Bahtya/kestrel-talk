@@ -1,12 +1,20 @@
 <script lang="ts">
   import { chatStore } from '../../lib/state/chat-store.svelte';
   import { saveSetting, loadSetting } from '../../lib/utils/storage';
+  import { initNotifications } from '../../lib/utils/browser-notify';
 
   let wsUrl = $state(loadSetting('wsUrl', 'ws://127.0.0.1:8090'));
   let authToken = $state(loadSetting('authToken', ''));
   let soundEnabled = $state(loadSetting('soundEnabled', 'true') === 'true');
   let notifEnabled = $state(loadSetting('notifEnabled', 'true') === 'true');
   let showSettings = $state(false);
+  let notifPermission = $state<'default' | 'granted' | 'denied'>('default');
+
+  function updateNotifPermission() {
+    if ('Notification' in window) {
+      notifPermission = Notification.permission;
+    }
+  }
 
   function save() {
     saveSetting('wsUrl', wsUrl);
@@ -26,10 +34,15 @@
     notifEnabled = !notifEnabled;
     saveSetting('notifEnabled', String(notifEnabled));
   }
+
+  async function requestNotifPermission() {
+    await initNotifications();
+    updateNotifPermission();
+  }
 </script>
 
 <div class="settings-section">
-  <button class="settings-toggle" onclick={() => { showSettings = !showSettings; }} aria-label="Connection settings">
+  <button class="settings-toggle" onclick={() => { showSettings = !showSettings; updateNotifPermission(); }} aria-label="Connection settings">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
       <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
     </svg>
@@ -65,6 +78,12 @@
           <span class="toggle-thumb"></span>
         </button>
       </div>
+
+      {#if notifEnabled && notifPermission === 'default'}
+        <button class="perm-btn" onclick={requestNotifPermission}>Grant notification permission</button>
+      {:else if notifEnabled && notifPermission === 'denied'}
+        <span class="perm-denied">Notifications blocked by browser</span>
+      {/if}
 
       <div class="settings-actions">
         <button class="save-btn" onclick={save}>Save & Reconnect</button>
@@ -235,5 +254,30 @@
 
   .toggle.active .toggle-thumb {
     transform: translateX(16px);
+  }
+
+  .perm-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 4px;
+    transition: background 0.15s;
+  }
+
+  .perm-btn:hover {
+    background: rgba(var(--accent-rgb, 0, 136, 255), 0.1);
+  }
+
+  .perm-denied {
+    display: block;
+    font-size: 11px;
+    color: var(--text-meta);
+    margin-top: 2px;
+    font-style: italic;
   }
 </style>

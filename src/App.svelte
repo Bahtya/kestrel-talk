@@ -21,6 +21,23 @@
 </ErrorBoundary>
 
 <style>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    background: var(--accent);
+    color: white;
+    padding: 8px 16px;
+    z-index: 100;
+    font-size: 14px;
+    border-radius: 0 0 var(--radius-sm) 0;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
   .app-layout {
     display: flex;
     height: 100%;

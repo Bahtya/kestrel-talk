@@ -10,6 +10,7 @@
 
   let highlighted = $state('');
   let copied = $state(false);
+  let lineCount = $derived(code.split('\n').length);
 
   $effect(() => {
     highlightCode(code, language ?? 'text').then((h) => { highlighted = h; });
@@ -30,11 +31,18 @@
     </button>
   </div>
   <div class="code-content">
-    {#if highlighted}
-      {@html highlighted}
-    {:else}
-      <pre><code>{code}</code></pre>
-    {/if}
+    <div class="line-numbers" aria-hidden="true">
+      {#each Array(lineCount) as _, i}
+        <span>{i + 1}</span>
+      {/each}
+    </div>
+    <div class="code-body">
+      {#if highlighted}
+        {@html highlighted}
+      {:else}
+        <pre><code>{code}</code></pre>
+      {/if}
+    </div>
   </div>
 </div>
 
@@ -79,17 +87,42 @@
   }
 
   .code-content {
-    padding: 12px;
+    display: flex;
     overflow-x: auto;
   }
 
-  .code-content :global(pre) {
+  .line-numbers {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 8px 12px 12px;
+    text-align: right;
+    user-select: none;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .line-numbers span {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-meta);
+    opacity: 0.5;
+  }
+
+  .code-body {
+    padding: 12px;
+    overflow-x: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .code-body :global(pre) {
     margin: 0;
     background: none !important;
     padding: 0 !important;
   }
 
-  .code-content :global(code) {
+  .code-body :global(code) {
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 1.6;
