@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { highlightCode, loadLanguage } from '../../lib/utils/highlighter';
 
   interface Props {
     content: string;
@@ -11,32 +11,22 @@
 
   let highlighted = $state('');
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-  let shikiReady = $state(false);
-
-  onMount(async () => {
-    try {
-      await import('shiki');
-      shikiReady = true;
-    } catch {
-      // shiki not available, use plain text
-    }
-  });
 
   $effect(() => {
     const c = content;
     const d = done;
+    const l = language;
 
-    if (!shikiReady) return;
+    // Try loading the language on first encounter
+    if (l) loadLanguage(l);
 
     if (d) {
-      // Final highlight - do it immediately
       debounceTimer && clearTimeout(debounceTimer);
-      highlightCode(c, language ?? 'text').then((h) => { highlighted = h; });
+      highlightCode(c, l ?? 'text').then((h) => { highlighted = h; });
     } else {
-      // Debounced highlight during streaming
       debounceTimer && clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        highlightCode(c, language ?? 'text').then((h) => { highlighted = h; });
+        highlightCode(c, l ?? 'text').then((h) => { highlighted = h; });
       }, 150);
     }
 
@@ -44,31 +34,6 @@
       debounceTimer && clearTimeout(debounceTimer);
     };
   });
-
-  async function highlightCode(code: string, lang: string): Promise<string> {
-    try {
-      const shiki = await import('shiki');
-      const highlighter = await shiki.createHighlighter({
-        themes: ['vitesse-dark'],
-        langs: [lang || 'text'],
-      });
-      const html = highlighter.codeToHtml(code, {
-        lang: lang || 'text',
-        theme: 'vitesse-dark',
-      });
-      highlighter.dispose();
-      return html;
-    } catch {
-      return '';
-    }
-  }
-
-  function escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
 </script>
 
 <div class="streaming-code-block" class:done>

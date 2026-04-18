@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { highlightCode } from '../../lib/utils/highlighter';
 
   interface Props {
     code: string;
@@ -11,40 +11,9 @@
   let highlighted = $state('');
   let copied = $state(false);
 
-  onMount(async () => {
-    highlighted = await highlightCode(code, language ?? 'text');
-  });
-
   $effect(() => {
-    const c = code;
-    const l = language;
-    highlightCode(c, l ?? 'text').then((h) => { highlighted = h; });
+    highlightCode(code, language ?? 'text').then((h) => { highlighted = h; });
   });
-
-  async function highlightCode(code: string, lang: string): Promise<string> {
-    try {
-      const shiki = await import('shiki');
-      const highlighter = await shiki.createHighlighter({
-        themes: ['vitesse-dark'],
-        langs: [lang || 'text'],
-      });
-      const html = highlighter.codeToHtml(code, {
-        lang: lang || 'text',
-        theme: 'vitesse-dark',
-      });
-      highlighter.dispose();
-      return html;
-    } catch {
-      return escapeHtml(code);
-    }
-  }
-
-  function escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
 
   async function copyCode() {
     await navigator.clipboard.writeText(code);
