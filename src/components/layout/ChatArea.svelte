@@ -1,4 +1,5 @@
 <script lang="ts">
+  import MessageList from '../chat/MessageList.svelte';
   import MessageInput from '../chat/MessageInput.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
 
@@ -17,14 +18,7 @@
     </div>
   </header>
 
-  <div class="message-list">
-    {#if chatStore.messages.length === 0 && !chatStore.activeResponse}
-      <div class="empty-state">
-        <div class="empty-icon">K</div>
-        <div class="empty-text">Connect to kestrel-agent to start chatting</div>
-      </div>
-    {/if}
-  </div>
+  <MessageList />
 
   <MessageInput onsend={handleSend} />
 </div>
@@ -56,39 +50,5 @@
     font-size: 13px;
     color: var(--text-secondary);
     margin-top: 1px;
-  }
-
-  .message-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-  }
-
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 16px;
-  }
-
-  .empty-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
-    opacity: 0.6;
-  }
-
-  .empty-text {
-    color: var(--text-secondary);
-    font-size: 14px;
   }
 </style>
