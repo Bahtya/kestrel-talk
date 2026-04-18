@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ChatMessage } from '../../lib/state/types';
   import TextBlock from '../blocks/TextBlock.svelte';
+  import CodeBlock from '../blocks/CodeBlock.svelte';
 
   interface Props {
     message: ChatMessage;
@@ -20,7 +21,11 @@
 
   <div class="bubble-content">
     {#each message.blocks as block (block.id)}
-      <TextBlock content={block.content} />
+      {#if block.blockType === 'code'}
+        <CodeBlock code={block.content} language={block.language} />
+      {:else}
+        <TextBlock content={block.content} />
+      {/if}
     {:else}
       <TextBlock content={message.content} />
     {/each}

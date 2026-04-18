@@ -1,0 +1,128 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+
+  interface Props {
+    code: string;
+    language?: string | null;
+  }
+
+  let { code, language = null }: Props = $props();
+
+  let highlighted = $state('');
+  let copied = $state(false);
+
+  onMount(async () => {
+    highlighted = await highlightCode(code, language ?? 'text');
+  });
+
+  $effect(() => {
+    const c = code;
+    const l = language;
+    highlightCode(c, l ?? 'text').then((h) => { highlighted = h; });
+  });
+
+  async function highlightCode(code: string, lang: string): Promise<string> {
+    try {
+      const shiki = await import('shiki');
+      const highlighter = await shiki.createHighlighter({
+        themes: ['vitesse-dark'],
+        langs: [lang || 'text'],
+      });
+      const html = highlighter.codeToHtml(code, {
+        lang: lang || 'text',
+        theme: 'vitesse-dark',
+      });
+      highlighter.dispose();
+      return html;
+    } catch {
+      return escapeHtml(code);
+    }
+  }
+
+  function escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  async function copyCode() {
+    await navigator.clipboard.writeText(code);
+    copied = true;
+    setTimeout(() => { copied = false; }, 2000);
+  }
+</script>
+
+<div class="code-block">
+  <div class="code-header">
+    <span class="code-lang">{language || 'text'}</span>
+    <button class="copy-btn" onclick={copyCode} aria-label="Copy code">
+      {copied ? 'Copied!' : 'Copy'}
+    </button>
+  </div>
+  <div class="code-content">
+    {#if highlighted}
+      {@html highlighted}
+    {:else}
+      <pre><code>{code}</code></pre>
+    {/if}
+  </div>
+</div>
+
+<style>
+  .code-block {
+    background: var(--bg-code);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: 8px 0;
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .code-lang {
+    font-size: 12px;
+    color: var(--text-meta);
+    text-transform: lowercase;
+    font-family: var(--font-mono);
+  }
+
+  .copy-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+  }
+
+  .code-content {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .code-content :global(pre) {
+    margin: 0;
+    background: none !important;
+    padding: 0 !important;
+  }
+
+  .code-content :global(code) {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+</style>
