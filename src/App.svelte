@@ -20,4 +20,21 @@
     height: 100%;
     width: 100%;
   }
+
+  @media (max-width: 768px) {
+    .app-layout {
+      position: relative;
+    }
+
+    .app-layout > :global(aside) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 10;
+      width: 280px;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+    }
+  }
 </style>

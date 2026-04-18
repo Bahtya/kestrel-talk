@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
   import MessageBubble from './MessageBubble.svelte';
   import StreamingResponse from './StreamingResponse.svelte';
@@ -6,17 +7,43 @@
 
   let listEl: HTMLDivElement | undefined = $state();
 
+  async function autoScroll() {
+    if (!listEl) return;
+    await tick();
+    if (isNearBottom(listEl, 200)) {
+      scrollToBottom(listEl, true);
+    }
+  }
+
+  // React to message count changes
   $effect(() => {
-    const msgs = chatStore.messages;
-    const active = chatStore.activeResponse;
-    if (listEl && isNearBottom(listEl)) {
-      // Use tick to wait for DOM update
-      setTimeout(() => scrollToBottom(listEl!), false);
+    chatStore.messages.length;
+    autoScroll();
+  });
+
+  // React to active response block changes
+  $effect(() => {
+    if (chatStore.activeResponse) {
+      chatStore.activeResponse.blockOrder.length;
+      autoScroll();
     }
   });
 </script>
 
 <div class="message-list" bind:this={listEl}>
+  {#if chatStore.messages.length === 0 && !chatStore.activeResponse}
+    <div class="empty-state">
+      <div class="empty-icon">K</div>
+      <div class="empty-text">
+        {#if chatStore.connectionState === 'connected'}
+          Send a message to start chatting
+        {:else}
+          Connect to kestrel-agent to start chatting
+        {/if}
+      </div>
+    </div>
+  {/if}
+
   {#each chatStore.messages as msg (msg.id)}
     <MessageBubble message={msg} />
   {/each}
@@ -40,6 +67,36 @@
     flex: 1;
     overflow-y: auto;
     padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+  }
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    opacity: 0.6;
+  }
+
+  .empty-text {
+    color: var(--text-secondary);
+    font-size: 14px;
   }
 
   .typing-indicator {
