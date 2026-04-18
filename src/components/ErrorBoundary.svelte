@@ -31,8 +31,7 @@
   });
 
   function reload() {
-    hasError = false;
-    errorMessage = '';
+    location.reload();
   }
 </script>
 

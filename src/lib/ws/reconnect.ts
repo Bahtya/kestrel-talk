@@ -8,11 +8,12 @@ export class ReconnectStrategy {
 
   schedule(callback: () => void): void {
     this.cancel();
-    const delay = Math.min(BASE_DELAY * Math.pow(MULTIPLIER, this.attempt), MAX_DELAY);
+    const baseDelay = Math.min(BASE_DELAY * Math.pow(MULTIPLIER, this.attempt), MAX_DELAY);
+    const jitter = baseDelay * (0.5 + Math.random() * 0.5);
     this.timer = setTimeout(() => {
       this.attempt++;
       callback();
-    }, delay);
+    }, jitter);
   }
 
   cancel(): void {

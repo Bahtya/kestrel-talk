@@ -18,6 +18,7 @@
     <img
       src={src}
       alt={caption}
+      loading="lazy"
       onload={() => { loaded = true; }}
       onerror={() => { error = true; }}
       class:loading={!loaded}

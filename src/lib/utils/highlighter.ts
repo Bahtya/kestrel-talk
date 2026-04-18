@@ -3,7 +3,10 @@ import { createHighlighter, type Highlighter } from 'shiki';
 let highlighterInstance: Highlighter | null = null;
 let highlighterPromise: Promise<Highlighter> | null = null;
 
-const CORE_LANGS = ['javascript', 'typescript', 'python', 'rust', 'plaintext'];
+const CORE_LANGS = [
+  'javascript', 'typescript', 'python', 'rust', 'plaintext',
+  'css', 'html', 'json', 'bash', 'sql', 'go', 'java', 'c', 'cpp',
+];
 
 export async function getHighlighter(): Promise<Highlighter> {
   if (highlighterInstance) return highlighterInstance;
