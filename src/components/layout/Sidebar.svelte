@@ -3,9 +3,16 @@
   import { chatStore } from '../../lib/state/chat-store.svelte';
   import { exportChatAsMarkdown } from '../../lib/utils/export';
   import { formatTime } from '../../lib/utils/time';
+  import { toggleTheme, getTheme } from '../../lib/utils/theme';
 
   function exportChat() {
     exportChatAsMarkdown(chatStore.messages);
+  }
+
+  let theme = $state(getTheme());
+
+  function handleToggleTheme() {
+    theme = toggleTheme();
   }
 
   let lastMsg = $derived(chatStore.messages.length > 0 ? chatStore.messages[chatStore.messages.length - 1] : null);
@@ -56,6 +63,13 @@
 
   <div class="sidebar-footer">
     <ConnectionSettings />
+    <button class="footer-btn" onclick={handleToggleTheme} aria-label="Toggle theme" title="Toggle theme">
+      {#if theme === 'dark'}
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" /></svg>
+      {:else}
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" /></svg>
+      {/if}
+    </button>
     <button class="footer-btn" onclick={exportChat} disabled={chatStore.messages.length === 0} aria-label="Export chat" title="Export chat">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
     </button>
