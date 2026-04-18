@@ -3,6 +3,7 @@
   import MessageInput from '../chat/MessageInput.svelte';
   import SearchBar from '../chat/SearchBar.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
+  import { toggleTheme } from '../../lib/utils/theme';
 
   interface Props {
     ontogglemenu?: () => void;
@@ -21,6 +22,9 @@
     if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
       e.preventDefault();
       searchOpen = !searchOpen;
+    } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+      e.preventDefault();
+      toggleTheme();
     }
   }
 

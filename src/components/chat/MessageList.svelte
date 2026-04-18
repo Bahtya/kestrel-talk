@@ -7,10 +7,13 @@
 
   let listEl: HTMLDivElement | undefined = $state();
   let userScrolledUp = $state(false);
+  let unseenBadge = $state('');
+  let lastMsgCount = 0;
 
   function checkScroll() {
     if (!listEl) return;
     userScrolledUp = !isNearBottom(listEl, 100);
+    if (!userScrolledUp) unseenBadge = '';
   }
 
   async function autoScroll() {
@@ -22,11 +25,16 @@
   function handleScrollToBottom() {
     if (!listEl) return;
     userScrolledUp = false;
+    unseenBadge = '';
     scrollToBottom(listEl, true);
   }
 
   $effect(() => {
-    chatStore.messages.length;
+    const count = chatStore.messages.length;
+    if (count > lastMsgCount && userScrolledUp) {
+      unseenBadge = String(count - lastMsgCount);
+    }
+    lastMsgCount = count;
     autoScroll();
   });
 
@@ -114,6 +122,9 @@
 {#if userScrolledUp}
   <button class="scroll-to-bottom" onclick={handleScrollToBottom} aria-label="Scroll to latest messages">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+    {#if unseenBadge}
+      <span class="unseen-badge">{unseenBadge}</span>
+    {/if}
   </button>
 {/if}
 
@@ -260,6 +271,23 @@
   .scroll-to-bottom:hover {
     background: var(--bg-hover);
     transform: scale(1.05);
+  }
+
+  .unseen-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--accent);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
   }
 
   @media (max-width: 768px) {
