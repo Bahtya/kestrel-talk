@@ -1,6 +1,7 @@
 import { WsConnection } from '../ws/connection';
 import { createMessage, type ServerEnvelope } from '../ws/protocol';
 import type { ConnectionState, ChatMessage, Block, ActiveResponse } from './types';
+import { saveMessages, loadMessages } from '../utils/storage';
 
 class ChatStore {
   connectionState = $state<ConnectionState>('disconnected');
@@ -15,11 +16,17 @@ class ChatStore {
   private v1StreamId: string | null = null;
 
   constructor() {
+    this.messages = loadMessages();
     this.connection = new WsConnection();
     this.connection.onStateChange((state) => {
       this.connectionState = state;
     });
     this.connection.onEnvelope((env) => this.handleEnvelope(env));
+
+    // Auto-persist messages on change
+    $effect(() => {
+      saveMessages(this.messages);
+    });
   }
 
   connect(): void {
@@ -28,6 +35,11 @@ class ChatStore {
 
   disconnect(): void {
     this.connection.disconnect();
+  }
+
+  clearHistory(): void {
+    this.messages = [];
+    this.activeResponse = null;
   }
 
   send(text: string): void {
