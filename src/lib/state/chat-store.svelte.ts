@@ -14,6 +14,10 @@ class ChatStore {
   private connection: WsConnection;
   private v1StreamId: string | null = null;
 
+  private persist(): void {
+    saveMessages(this.messages);
+  }
+
   constructor() {
     this.messages = loadMessages();
     this.connection = new WsConnection();
@@ -22,10 +26,6 @@ class ChatStore {
     });
     this.connection.onEnvelope((env) => this.handleEnvelope(env));
 
-    // Auto-persist messages on change
-    $effect(() => {
-      saveMessages(this.messages);
-    });
   }
 
   connect(): void {
@@ -47,6 +47,7 @@ class ChatStore {
   clearHistory(): void {
     this.messages = [];
     this.activeResponse = null;
+    this.persist();
   }
 
   send(text: string): void {
@@ -58,6 +59,7 @@ class ChatStore {
       timestamp: new Date(),
     };
     this.messages = [...this.messages, userMsg];
+    this.persist();
     const envelope = createMessage(text);
     this.connection.send(JSON.stringify(envelope));
   }
@@ -187,6 +189,7 @@ class ChatStore {
     this.messages = [...this.messages, msg];
     this.activeResponse = null;
     this.isTyping = false;
+    this.persist();
   }
 
   private handleError(id: string, code: string, content: string): void {
@@ -207,6 +210,7 @@ class ChatStore {
     };
     this.messages = [...this.messages, msg];
     this.isTyping = false;
+    this.persist();
   }
 
   private handleImage(id: string, url: string, caption?: string): void {
@@ -228,6 +232,7 @@ class ChatStore {
     };
     this.messages = [...this.messages, msg];
     this.isTyping = false;
+    this.persist();
   }
 
   // --- v1 simple streaming compat ---
@@ -286,6 +291,7 @@ class ChatStore {
     };
     this.messages = [...this.messages, msg];
     this.isTyping = false;
+    this.persist();
   }
 }
 

@@ -7,6 +7,9 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  test: {
+    exclude: ['browser-e2e/**', 'node_modules/**'],
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,
