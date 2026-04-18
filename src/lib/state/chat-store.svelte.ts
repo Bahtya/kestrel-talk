@@ -5,7 +5,7 @@ import { saveMessages, loadMessages } from '../utils/storage';
 import { playNotification, playSend } from '../utils/notify';
 import { showNotification } from '../utils/browser-notify';
 
-class ChatStore {
+export class ChatStore {
   connectionState = $state<ConnectionState>('disconnected');
   reconnectAttempt = $state(0);
   lastError = $state('');
@@ -275,7 +275,8 @@ class ChatStore {
   // --- v1 simple streaming compat ---
 
   private handleV1Streaming(id: string, chunk: string, done: boolean): void {
-    if (this.activeResponse) return;
+    // Skip if there's an active v2 response
+    if (this.activeResponse && !this.v1StreamId) return;
 
     if (!this.v1StreamId) {
       this.v1StreamId = id;
