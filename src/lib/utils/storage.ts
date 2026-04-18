@@ -83,3 +83,34 @@ export function loadSetting(key: string, defaultValue: string): string {
     return defaultValue;
   }
 }
+
+// Toast notification system
+interface Toast {
+  id: number;
+  message: string;
+  type: 'info' | 'success' | 'error';
+}
+
+let nextToastId = 0;
+const toastList: Toast[] = [];
+const toastListeners: Set<(toasts: readonly Toast[]) => void> = new Set();
+
+export function getToasts(): readonly Toast[] {
+  return toastList;
+}
+
+export function subscribeToasts(cb: (toasts: readonly Toast[]) => void): () => void {
+  toastListeners.add(cb);
+  return () => { toastListeners.delete(cb); };
+}
+
+export function showToast(message: string, type: Toast['type'] = 'info') {
+  const id = nextToastId++;
+  toastList.push({ id, message, type });
+  toastListeners.forEach((cb) => cb([...toastList]));
+  setTimeout(() => {
+    const idx = toastList.findIndex((t) => t.id === id);
+    if (idx !== -1) toastList.splice(idx, 1);
+    toastListeners.forEach((cb) => cb([...toastList]));
+  }, 3000);
+}

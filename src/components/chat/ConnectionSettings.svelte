@@ -2,6 +2,7 @@
   import { chatStore } from '../../lib/state/chat-store.svelte';
   import { saveSetting, loadSetting } from '../../lib/utils/storage';
   import { initNotifications } from '../../lib/utils/browser-notify';
+  import { showToast } from '../../lib/utils/storage';
 
   let wsUrl = $state(loadSetting('wsUrl', 'ws://127.0.0.1:8090'));
   let authToken = $state(loadSetting('authToken', ''));
@@ -23,6 +24,7 @@
     chatStore.disconnect();
     chatStore.updateConnection(wsUrl, authToken || undefined);
     chatStore.connect();
+    showToast('Reconnecting...', 'info');
   }
 
   function toggleSound() {
@@ -87,7 +89,7 @@
 
       <div class="settings-actions">
         <button class="save-btn" onclick={save}>Save & Reconnect</button>
-        <button class="clear-btn" onclick={() => { chatStore.clearHistory(); }}>Clear History</button>
+        <button class="clear-btn" onclick={() => { chatStore.clearHistory(); showToast('History cleared', 'success'); }}>Clear History</button>
       </div>
     </div>
   {/if}

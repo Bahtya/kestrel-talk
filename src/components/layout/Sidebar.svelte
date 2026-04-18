@@ -4,9 +4,11 @@
   import { exportChatAsMarkdown } from '../../lib/utils/export';
   import { formatTime } from '../../lib/utils/time';
   import { toggleTheme, getTheme } from '../../lib/utils/theme';
+  import { showToast } from '../../lib/utils/storage';
 
   function exportChat() {
     exportChatAsMarkdown(chatStore.messages);
+    showToast('Chat exported', 'success');
   }
 
   let theme = $state(getTheme());

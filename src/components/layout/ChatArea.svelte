@@ -4,7 +4,13 @@
   import SearchBar from '../chat/SearchBar.svelte';
   import { chatStore } from '../../lib/state/chat-store.svelte';
 
-  let sidebarOpen = $state(false);
+  interface Props {
+    ontogglemenu?: () => void;
+    onclosemenu?: () => void;
+    mobileMenuOpen?: boolean;
+  }
+
+  let { ontogglemenu, onclosemenu, mobileMenuOpen = false }: Props = $props();
   let searchOpen = $state(false);
 
   function handleSend(text: string) {
@@ -33,7 +39,7 @@
 
 <div class="chat-area">
   <header class="chat-header">
-    <button class="menu-btn" onclick={() => { sidebarOpen = !sidebarOpen; }} aria-label="Toggle sidebar">
+    <button class="menu-btn" onclick={ontogglemenu} aria-label="Toggle sidebar">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" /></svg>
     </button>
     <div class="header-avatar">
@@ -64,9 +70,9 @@
   <MessageInput onsend={handleSend} />
 </div>
 
-{#if sidebarOpen}
+{#if mobileMenuOpen}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="sidebar-overlay" role="button" tabindex="-1" onclick={() => { sidebarOpen = false; }} onkeydown={(e) => { if (e.key === 'Escape') sidebarOpen = false; }}></div>
+  <div class="sidebar-overlay" role="button" tabindex="-1" onclick={onclosemenu} onkeydown={(e) => { if (e.key === 'Escape') onclosemenu?.(); }}></div>
 {/if}
 
 <style>

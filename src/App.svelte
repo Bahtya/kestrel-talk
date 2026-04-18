@@ -3,8 +3,11 @@
   import ErrorBoundary from './components/ErrorBoundary.svelte';
   import Sidebar from './components/layout/Sidebar.svelte';
   import ChatArea from './components/layout/ChatArea.svelte';
+  import ToastContainer from './components/ToastContainer.svelte';
   import { chatStore } from './lib/state/chat-store.svelte';
   import { initNotifications } from './lib/utils/browser-notify';
+
+  let mobileMenuOpen = $state(false);
 
   onMount(() => {
     chatStore.connect();
@@ -15,9 +18,12 @@
 <ErrorBoundary>
   <a href="#chat-messages" class="skip-link">Skip to chat</a>
   <div class="app-layout">
-    <Sidebar />
-    <ChatArea />
+    <div class="sidebar-wrapper" class:mobile-open={mobileMenuOpen}>
+      <Sidebar />
+    </div>
+    <ChatArea ontogglemenu={() => { mobileMenuOpen = !mobileMenuOpen; }} onclosemenu={() => { mobileMenuOpen = false; }} mobileMenuOpen={mobileMenuOpen} />
   </div>
+  <ToastContainer />
 </ErrorBoundary>
 
 <style>
@@ -49,7 +55,7 @@
       position: relative;
     }
 
-    .app-layout > :global(aside) {
+    .sidebar-wrapper {
       position: absolute;
       left: 0;
       top: 0;
@@ -58,6 +64,10 @@
       width: 280px;
       transform: translateX(-100%);
       transition: transform 0.2s ease;
+    }
+
+    .sidebar-wrapper.mobile-open {
+      transform: translateX(0);
     }
   }
 </style>

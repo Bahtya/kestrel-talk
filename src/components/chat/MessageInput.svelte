@@ -1,6 +1,7 @@
 <script lang="ts">
   import { chatStore } from '../../lib/state/chat-store.svelte';
   import { exportChatAsMarkdown } from '../../lib/utils/export';
+  import { showToast } from '../../lib/utils/storage';
 
   interface Props {
     onsend: (text: string) => void;
@@ -34,6 +35,7 @@
 
     if (text === '/clear') {
       chatStore.clearHistory();
+      showToast('History cleared', 'success');
       inputText = '';
       historyIndex = -1;
       resetHeight();
@@ -57,6 +59,7 @@ Shift+Enter — New line`);
 
     if (text === '/export') {
       exportChatAsMarkdown(chatStore.messages);
+      showToast('Chat exported', 'success');
       inputText = '';
       historyIndex = -1;
       resetHeight();

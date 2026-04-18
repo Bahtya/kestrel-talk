@@ -282,9 +282,9 @@ test.describe('kestrel-talk browser E2E', () => {
     await page.waitForTimeout(1500);
 
     // On mobile, sidebar should be hidden by default
-    const sidebar = page.locator('aside');
-    // Sidebar should exist but be off-screen (transform: translateX(-100%))
-    const transform = await sidebar.evaluate(el => getComputedStyle(el).transform);
+    const sidebarWrapper = page.locator('.sidebar-wrapper');
+    // Sidebar wrapper should be off-screen (transform: translateX(-100%))
+    const transform = await sidebarWrapper.evaluate(el => getComputedStyle(el).transform);
     expect(transform).not.toBe('none');
 
     // Chat area should take full width
