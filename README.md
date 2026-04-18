@@ -9,8 +9,9 @@ Web UI for [kestrel-agent](https://github.com/Bahtya/kestrel-agent) — a real-t
 - **Telegram MarkdownV2** — underline, strikethrough, spoiler with fallback to standard markdown
 - **HTML passthrough** — sanitized HTML rendering
 - **Telegram UI** — dark theme, bubble tails, checkmarks, online status, date separators
-- **Auto-reconnect** — exponential backoff with message queue
+- **Auto-reconnect** — exponential backoff with jitter, connection timeout, manual reconnect button
 - **Message persistence** — localStorage with automatic save/load
+- **Protocol validation** — strict envelope parsing rejects malformed data
 - **Auth support** — token-based WebSocket authentication
 - **Chat search** — Ctrl+F with match navigation and highlighting
 - **Input history** — ↑/↓ arrow keys to recall previous messages
@@ -76,10 +77,10 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (78 tests, 11 files)
+# Unit tests (95 tests, 12 files)
 npm test
 
-# Browser E2E tests (25 tests — real Chromium)
+# Browser E2E tests (26 tests — real Chromium)
 npx playwright install chromium   # first time only
 npx playwright test
 
@@ -89,7 +90,7 @@ node e2e-test.mjs
 
 ### Browser E2E coverage
 
-Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks, /help and /export commands, reconnect indicator, toast notifications, mobile hamburger toggle, code line numbers, theme toggle.
+Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search with highlight animation, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks, /help and /export commands, reconnect indicator, toast notifications, mobile hamburger toggle, code line numbers, theme toggle.
 
 ## Commands
 
@@ -136,7 +137,7 @@ src/
 │   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar, ConnectionSettings
 │   ├── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
 │   └── ToastContainer.svelte, ErrorBoundary.svelte
-└── __tests__/       Unit tests (78 tests, 11 files)
+└── __tests__/       Unit tests (95 tests, 12 files)
 ```
 
 ## License
