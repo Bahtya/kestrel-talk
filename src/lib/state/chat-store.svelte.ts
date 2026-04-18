@@ -2,6 +2,7 @@ import { WsConnection } from '../ws/connection';
 import { createMessage, type ServerEnvelope } from '../ws/protocol';
 import type { ConnectionState, ChatMessage, Block, ActiveResponse } from './types';
 import { saveMessages, loadMessages } from '../utils/storage';
+import { playNotification, playSend } from '../utils/notify';
 
 class ChatStore {
   connectionState = $state<ConnectionState>('disconnected');
@@ -50,6 +51,25 @@ class ChatStore {
     this.persist();
   }
 
+  addSystemMessage(content: string): void {
+    const msg: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      content,
+      blocks: [{
+        id: crypto.randomUUID(),
+        responseId: '',
+        blockType: 'text',
+        language: null,
+        content,
+        status: 'done',
+      }],
+      timestamp: new Date(),
+    };
+    this.messages = [...this.messages, msg];
+    this.persist();
+  }
+
   send(text: string): void {
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
@@ -60,6 +80,7 @@ class ChatStore {
     };
     this.messages = [...this.messages, userMsg];
     this.persist();
+    playSend();
     const envelope = createMessage(text);
     this.connection.send(JSON.stringify(envelope));
   }
@@ -190,6 +211,7 @@ class ChatStore {
     this.activeResponse = null;
     this.isTyping = false;
     this.persist();
+    playNotification();
   }
 
   private handleError(id: string, code: string, content: string): void {
@@ -292,6 +314,7 @@ class ChatStore {
     this.messages = [...this.messages, msg];
     this.isTyping = false;
     this.persist();
+    playNotification();
   }
 }
 

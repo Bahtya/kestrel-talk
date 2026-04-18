@@ -39,6 +39,21 @@
       return;
     }
 
+    if (text === '/help') {
+      chatStore.addSystemMessage(`**Available commands:**
+/clear — Clear chat history
+/help — Show this help message
+/export — Export chat as markdown
+/search or Ctrl+F — Search messages
+↑ / ↓ — Navigate input history
+Enter — Send message
+Shift+Enter — New line`);
+      inputText = '';
+      historyIndex = -1;
+      resetHeight();
+      return;
+    }
+
     inputHistory = [text, ...inputHistory].slice(0, 50);
     historyIndex = -1;
     onsend(text);
