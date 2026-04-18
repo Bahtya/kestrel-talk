@@ -11,6 +11,7 @@ type StateHandler = (state: ConnectionState) => void;
 export class WsConnection {
   private ws: WebSocket | null = null;
   private url: string;
+  private token: string | undefined;
   private reconnect: ReconnectStrategy;
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   private messageQueue: string[] = [];
@@ -18,8 +19,9 @@ export class WsConnection {
   private stateHandler: StateHandler | null = null;
   private intentionalClose = false;
 
-  constructor(url = DEFAULT_URL) {
+  constructor(url = DEFAULT_URL, token?: string) {
     this.url = url;
+    this.token = token;
     this.reconnect = new ReconnectStrategy();
   }
 
@@ -46,6 +48,9 @@ export class WsConnection {
     this.ws.onopen = () => {
       this.reconnect.reset();
       this.setState('connected');
+      if (this.token) {
+        this.send(JSON.stringify({ type: 'auth', token: this.token }));
+      }
       this.flushQueue();
       this.startPing();
     };

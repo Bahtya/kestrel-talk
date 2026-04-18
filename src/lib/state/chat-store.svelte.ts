@@ -37,6 +37,14 @@ class ChatStore {
     this.connection.disconnect();
   }
 
+  updateConnection(url: string, token?: string): void {
+    this.connection = new WsConnection(url, token);
+    this.connection.onStateChange((state) => {
+      this.connectionState = state;
+    });
+    this.connection.onEnvelope((env) => this.handleEnvelope(env));
+  }
+
   clearHistory(): void {
     this.messages = [];
     this.activeResponse = null;

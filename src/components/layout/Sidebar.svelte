@@ -1,5 +1,7 @@
 <script lang="ts">
   import ConnectionStatus from '../chat/ConnectionStatus.svelte';
+  import ConnectionSettings from '../chat/ConnectionSettings.svelte';
+  import { chatStore } from '../../lib/state/chat-store.svelte';
 </script>
 
 <aside class="sidebar">
@@ -12,12 +14,15 @@
       <div class="session-avatar">K</div>
       <div class="session-info">
         <div class="session-name">kestrel-agent</div>
-        <div class="session-preview">WebSocket</div>
+        <div class="session-preview">
+          {chatStore.connectionState === 'connected' ? 'online' : chatStore.connectionState}
+        </div>
       </div>
     </div>
   </div>
 
   <div class="sidebar-footer">
+    <ConnectionSettings />
     <ConnectionStatus />
   </div>
 </aside>
@@ -104,5 +109,8 @@
   .sidebar-footer {
     padding: 12px 16px;
     border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 </style>
