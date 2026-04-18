@@ -83,14 +83,14 @@ class ChatStore {
         break;
 
       case 'error':
-        this.handleCompleteMessage(env.id, `Error: ${env.content ?? env.code}`);
+        this.handleError(env.id, env.code, env.content ?? 'Unknown error');
         break;
 
       case 'pong':
         break;
 
       case 'image':
-        this.handleCompleteMessage(env.id, `![${env.caption ?? ''}](${env.url})`);
+        this.handleImage(env.id, env.url, env.caption);
         break;
     }
   }
@@ -167,6 +167,47 @@ class ChatStore {
 
     this.messages = [...this.messages, msg];
     this.activeResponse = null;
+    this.isTyping = false;
+  }
+
+  private handleError(id: string, code: string, content: string): void {
+    const msg: ChatMessage = {
+      id,
+      role: 'assistant',
+      content,
+      blocks: [{
+        id: crypto.randomUUID(),
+        responseId: id,
+        blockType: 'error',
+        language: null,
+        content,
+        status: 'done',
+        errorCode: code,
+      }],
+      timestamp: new Date(),
+    };
+    this.messages = [...this.messages, msg];
+    this.isTyping = false;
+  }
+
+  private handleImage(id: string, url: string, caption?: string): void {
+    const msg: ChatMessage = {
+      id,
+      role: 'assistant',
+      content: caption ?? '',
+      blocks: [{
+        id: crypto.randomUUID(),
+        responseId: id,
+        blockType: 'image',
+        language: null,
+        content: '',
+        status: 'done',
+        imageUrl: url,
+        imageCaption: caption,
+      }],
+      timestamp: new Date(),
+    };
+    this.messages = [...this.messages, msg];
     this.isTyping = false;
   }
 

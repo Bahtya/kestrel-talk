@@ -1,6 +1,6 @@
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
-export type BlockType = 'text' | 'code' | 'thinking' | 'tool_call' | 'tool_result';
+export type BlockType = 'text' | 'code' | 'thinking' | 'tool_call' | 'tool_result' | 'image' | 'error';
 
 export type BlockStatus = 'streaming' | 'done';
 
@@ -11,6 +11,9 @@ export interface Block {
   language: string | null;
   content: string;
   status: BlockStatus;
+  imageUrl?: string;
+  imageCaption?: string;
+  errorCode?: string;
 }
 
 export interface ChatMessage {

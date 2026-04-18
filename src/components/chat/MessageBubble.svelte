@@ -4,6 +4,7 @@
   import CodeBlock from '../blocks/CodeBlock.svelte';
   import ThinkingBlock from '../blocks/ThinkingBlock.svelte';
   import ToolBlock from '../blocks/ToolBlock.svelte';
+  import ImageBlock from '../blocks/ImageBlock.svelte';
 
   interface Props {
     message: ChatMessage;
@@ -31,6 +32,13 @@
         <ToolBlock content={block.content} />
       {:else if block.blockType === 'tool_result'}
         <ToolBlock content={block.content} isResult={true} />
+      {:else if block.blockType === 'image'}
+        <ImageBlock src={block.imageUrl ?? ''} caption={block.imageCaption} />
+      {:else if block.blockType === 'error'}
+        <div class="error-block">
+          <span class="error-code">{block.errorCode ?? 'error'}</span>
+          <span class="error-text">{block.content}</span>
+        </div>
       {:else}
         <TextBlock content={block.content} />
       {/if}
@@ -90,5 +98,28 @@
     color: var(--text-meta);
     margin-top: 4px;
     text-align: right;
+  }
+
+  .error-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(229, 57, 53, 0.1);
+    border: 1px solid rgba(229, 57, 53, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+  }
+
+  .error-code {
+    font-weight: 600;
+    color: var(--danger);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .error-text {
+    color: var(--text-secondary);
   }
 </style>

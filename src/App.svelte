@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import ErrorBoundary from './components/ErrorBoundary.svelte';
   import Sidebar from './components/layout/Sidebar.svelte';
   import ChatArea from './components/layout/ChatArea.svelte';
   import { chatStore } from './lib/state/chat-store.svelte';
@@ -9,10 +10,12 @@
   });
 </script>
 
-<div class="app-layout">
-  <Sidebar />
-  <ChatArea />
-</div>
+<ErrorBoundary>
+  <div class="app-layout">
+    <Sidebar />
+    <ChatArea />
+  </div>
+</ErrorBoundary>
 
 <style>
   .app-layout {
