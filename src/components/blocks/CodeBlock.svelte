@@ -22,7 +22,7 @@
   }
 </script>
 
-<div class="code-block">
+<div class="code-block" role="region" aria-label="{language || 'text'} code block">
   <div class="code-header">
     <span class="code-lang">{language || 'text'}</span>
     <button class="copy-btn" onclick={copyCode} aria-label="Copy code">

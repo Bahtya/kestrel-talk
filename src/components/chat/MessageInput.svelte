@@ -9,16 +9,38 @@
   let inputText = $state('');
   let textareaEl: HTMLTextAreaElement | undefined = $state();
 
+  let inputHistory: string[] = $state([]);
+  let historyIndex = -1;
+
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       send();
+    } else if (e.key === 'ArrowUp' && inputText === '' && inputHistory.length > 0) {
+      e.preventDefault();
+      historyIndex = Math.min(historyIndex + 1, inputHistory.length - 1);
+      inputText = inputHistory[historyIndex];
+    } else if (e.key === 'ArrowDown' && historyIndex >= 0) {
+      e.preventDefault();
+      historyIndex = Math.max(historyIndex - 1, -1);
+      inputText = historyIndex >= 0 ? inputHistory[historyIndex] : '';
     }
   }
 
   function send() {
     const text = inputText.trim();
     if (!text) return;
+
+    if (text === '/clear') {
+      chatStore.clearHistory();
+      inputText = '';
+      historyIndex = -1;
+      resetHeight();
+      return;
+    }
+
+    inputHistory = [text, ...inputHistory].slice(0, 50);
+    historyIndex = -1;
     onsend(text);
     inputText = '';
     resetHeight();
@@ -51,7 +73,7 @@
       bind:value={inputText}
       oninput={autoResize}
       onkeydown={handleKeydown}
-      placeholder={disabled ? 'Waiting for connection...' : 'Type a message...'}
+      placeholder={disabled ? 'Waiting for connection...' : 'Type a message... (↑ for history)'}
       rows="1"
       {disabled}
     ></textarea>

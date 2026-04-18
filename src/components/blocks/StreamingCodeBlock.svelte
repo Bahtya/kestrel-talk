@@ -36,7 +36,7 @@
   });
 </script>
 
-<div class="streaming-code-block" class:done>
+<div class="streaming-code-block" class:done role="region" aria-label="{language || 'text'} code block" aria-live="polite">
   {#if language}
     <div class="code-lang">{language}</div>
   {/if}

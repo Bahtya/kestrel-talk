@@ -9,17 +9,17 @@
     <h1 class="sidebar-title">kestrel-talk</h1>
   </div>
 
-  <div class="session-list">
-    <div class="session-item active">
-      <div class="session-avatar">K</div>
+  <nav class="session-list" aria-label="Chat sessions">
+    <button class="session-item active" aria-current="true">
+      <div class="session-avatar" aria-hidden="true">K</div>
       <div class="session-info">
         <div class="session-name">kestrel-agent</div>
         <div class="session-preview">
           {chatStore.connectionState === 'connected' ? 'online' : chatStore.connectionState}
         </div>
       </div>
-    </div>
-  </div>
+    </button>
+  </nav>
 
   <div class="sidebar-footer">
     <ConnectionSettings />
@@ -63,6 +63,12 @@
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: background 0.15s;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    font: inherit;
+    color: inherit;
   }
 
   .session-item:hover {

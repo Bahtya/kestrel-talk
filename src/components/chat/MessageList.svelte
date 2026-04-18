@@ -6,22 +6,31 @@
   import { scrollToBottom, isNearBottom } from '../../lib/utils/scroll';
 
   let listEl: HTMLDivElement | undefined = $state();
+  let userScrolledUp = $state(false);
+
+  function checkScroll() {
+    if (!listEl) return;
+    userScrolledUp = !isNearBottom(listEl, 100);
+  }
 
   async function autoScroll() {
     if (!listEl) return;
+    if (userScrolledUp) return;
     await tick();
-    if (isNearBottom(listEl, 200)) {
-      scrollToBottom(listEl, true);
-    }
+    scrollToBottom(listEl, true);
   }
 
-  // React to message count changes
+  function handleScrollToBottom() {
+    if (!listEl) return;
+    userScrolledUp = false;
+    scrollToBottom(listEl, true);
+  }
+
   $effect(() => {
     chatStore.messages.length;
     autoScroll();
   });
 
-  // React to active response block changes
   $effect(() => {
     if (chatStore.activeResponse) {
       chatStore.activeResponse.blockOrder.length;
@@ -30,7 +39,14 @@
   });
 </script>
 
-<div class="message-list" bind:this={listEl} role="log" aria-label="Chat messages" aria-live="polite">
+<svelte:window onkeydown={(e) => {
+  if (e.key === 'End' && listEl) {
+    userScrolledUp = false;
+    scrollToBottom(listEl, true);
+  }
+}} />
+
+<div class="message-list" bind:this={listEl} role="log" id="chat-messages" aria-label="Chat messages" aria-live="polite" onscroll={checkScroll}>
   {#if chatStore.messages.length === 0 && !chatStore.activeResponse}
     <div class="empty-state">
       <div class="empty-icon">K</div>
@@ -66,6 +82,14 @@
   {/if}
 </div>
 
+{#if userScrolledUp}
+  <button class="scroll-to-bottom" onclick={handleScrollToBottom} aria-label="Scroll to latest messages">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+      <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+    </svg>
+  </button>
+{/if}
+
 <style>
   .message-list {
     flex: 1;
@@ -73,6 +97,7 @@
     padding: 16px 20px;
     display: flex;
     flex-direction: column;
+    position: relative;
   }
 
   .empty-state {
@@ -148,5 +173,29 @@
   @keyframes typing-bounce {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
     30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .scroll-to-bottom {
+    position: absolute;
+    bottom: 12px;
+    right: 28px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-sidebar);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: background 0.15s, transform 0.15s;
+    z-index: 2;
+  }
+
+  .scroll-to-bottom:hover {
+    background: var(--bg-hover);
+    transform: scale(1.05);
   }
 </style>
