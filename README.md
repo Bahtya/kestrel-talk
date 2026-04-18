@@ -14,13 +14,16 @@ Web UI for [kestrel-agent](https://github.com/Bahtya/kestrel-agent) — a real-t
 - **Auth support** — token-based WebSocket authentication
 - **Chat search** — Ctrl+F with match navigation and highlighting
 - **Input history** — ↑/↓ arrow keys to recall previous messages
-- **Slash commands** — `/clear`, `/help`
+- **Slash commands** — `/clear`, `/help`, `/export`
 - **Export chat** — download conversation as markdown
-- **Mobile responsive** — collapsible sidebar with overlay
-- **Notification sounds** — Web Audio API tones for send/receive
-- **Browser notifications** — desktop alerts when page is unfocused
+- **Mobile responsive** — collapsible sidebar with hamburger menu
+- **Light/dark theme** — toggle with localStorage persistence
+- **Toast notifications** — feedback for actions (clear, export, reconnect)
+- **Notification sounds** — Web Audio API tones with toggle
+- **Browser notifications** — desktop alerts with permission management
+- **Code line numbers** — numbered gutter on code blocks
 - **PWA** — installable with offline caching via service worker
-- **Accessibility** — ARIA labels, keyboard navigation, reduced motion, focus management
+- **Accessibility** — skip link, ARIA labels, keyboard navigation, reduced motion, focus management
 - **Mock server** — test without kestrel-agent running
 
 ## Quick Start
@@ -73,10 +76,10 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (66 tests, 8 files)
+# Unit tests (78 tests, 11 files)
 npm test
 
-# Browser E2E tests (18 tests — real Chromium)
+# Browser E2E tests (25 tests — real Chromium)
 npx playwright install chromium   # first time only
 npx playwright test
 
@@ -86,7 +89,7 @@ node e2e-test.mjs
 
 ### Browser E2E coverage
 
-Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks.
+Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks, /help and /export commands, reconnect indicator, toast notifications, mobile hamburger toggle, code line numbers, theme toggle.
 
 ## Commands
 
@@ -127,12 +130,13 @@ src/
 ├── lib/
 │   ├── ws/          WebSocket connection, protocol, reconnection
 │   ├── state/       Svelte 5 reactive store, type definitions
-│   └── utils/       Markdown rendering, shiki, storage, scroll, time, notify
+│   └── utils/       Markdown rendering, shiki, storage, scroll, time, notify, theme, export
 ├── components/
 │   ├── layout/      Sidebar, ChatArea
-│   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar
-│   └── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
-└── __tests__/       Unit tests (66 tests, 8 files)
+│   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar, ConnectionSettings
+│   ├── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
+│   └── ToastContainer.svelte, ErrorBoundary.svelte
+└── __tests__/       Unit tests (78 tests, 11 files)
 ```
 
 ## License
