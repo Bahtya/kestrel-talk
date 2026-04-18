@@ -8,8 +8,8 @@ beforeEach(() => {
 });
 
 describe('theme', () => {
-  it('defaults to dark', () => {
-    expect(getTheme()).toBe('dark');
+  it('defaults to system preference', () => {
+    expect(getTheme()).toBe('dark'); // jsdom defaults to dark
   });
 
   it('sets theme and persists', () => {

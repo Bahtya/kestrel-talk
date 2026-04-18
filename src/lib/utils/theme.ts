@@ -1,7 +1,18 @@
 type Theme = 'dark' | 'light';
 
+function systemPreference(): Theme {
+  try {
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light';
+    }
+  } catch {
+    // matchMedia not available
+  }
+  return 'dark';
+}
+
 export function getTheme(): Theme {
-  return (localStorage.getItem('theme') as Theme) || 'dark';
+  return (localStorage.getItem('theme') as Theme) || systemPreference();
 }
 
 export function setTheme(theme: Theme): void {
