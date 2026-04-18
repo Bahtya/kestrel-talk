@@ -93,6 +93,8 @@ Shift+Enter — New line`);
     <div class="connection-banner">
       {#if chatStore.reconnectAttempt > 0}
         Reconnecting... (attempt {chatStore.reconnectAttempt})
+      {:else if chatStore.lastError}
+        {chatStore.lastError}
       {:else}
         Waiting for connection...
       {/if}

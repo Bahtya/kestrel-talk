@@ -8,6 +8,7 @@ import { showNotification } from '../utils/browser-notify';
 class ChatStore {
   connectionState = $state<ConnectionState>('disconnected');
   reconnectAttempt = $state(0);
+  lastError = $state('');
   clientId = $state('');
   serverVersion = $state('');
   messages = $state<ChatMessage[]>([]);
@@ -28,8 +29,10 @@ class ChatStore {
       this.connectionState = state;
       if (state === 'connected') {
         this.reconnectAttempt = 0;
+        this.lastError = '';
       } else if (state === 'disconnected' || state === 'error') {
         this.reconnectAttempt++;
+        if (state === 'error') this.lastError = 'Connection failed';
       }
     });
     this.connection.onEnvelope((env) => this.handleEnvelope(env));
@@ -223,6 +226,7 @@ class ChatStore {
   }
 
   private handleError(id: string, code: string, content: string): void {
+    this.lastError = `${code}: ${content}`;
     const msg: ChatMessage = {
       id,
       role: 'assistant',
