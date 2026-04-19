@@ -17,7 +17,15 @@
   });
 
   async function copyCode() {
-    await navigator.clipboard.writeText(code);
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      const ta = Object.assign(document.createElement('textarea'), { value: code });
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
     copied = true;
     setTimeout(() => { copied = false; }, 2000);
   }

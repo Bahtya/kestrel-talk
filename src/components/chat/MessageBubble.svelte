@@ -22,9 +22,20 @@
           return b.content;
         }).join('\n\n')
       : message.content;
-    await navigator.clipboard.writeText(text);
-    copied = true;
-    setTimeout(() => { copied = false; }, 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+      setTimeout(() => { copied = false; }, 2000);
+    } catch {
+      // Fallback for insecure contexts
+      const ta = Object.assign(document.createElement('textarea'), { value: text });
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      copied = true;
+      setTimeout(() => { copied = false; }, 2000);
+    }
   }
 </script>
 

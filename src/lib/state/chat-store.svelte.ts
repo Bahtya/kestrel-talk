@@ -18,6 +18,7 @@ export class ChatStore {
   private connection: WsConnection;
   private wasConnected = false;
   private v1StreamId: string | null = null;
+  private typingTimer: ReturnType<typeof setTimeout> | null = null;
 
   private persist(): void {
     saveMessages(this.messages);
@@ -49,6 +50,7 @@ export class ChatStore {
       if (state === 'error') this.lastError = 'Connection failed';
       this.savePartialResponse();
       this.isTyping = false;
+      this.clearTypingTimer();
     }
   }
 
@@ -177,6 +179,7 @@ export class ChatStore {
 
       case 'typing':
         this.isTyping = true;
+        this.resetTypingTimer();
         break;
 
       case 'error':
@@ -265,6 +268,7 @@ export class ChatStore {
     this.messages = [...this.messages, msg];
     this.activeResponse = null;
     this.isTyping = false;
+    this.clearTypingTimer();
     this.persist();
     playNotification();
     showNotification('kestrel-agent', msg.content.slice(0, 100));
@@ -381,8 +385,23 @@ export class ChatStore {
     };
     this.messages = [...this.messages, msg];
     this.isTyping = false;
+    this.clearTypingTimer();
     this.persist();
     playNotification();
+  }
+
+  private resetTypingTimer(): void {
+    this.clearTypingTimer();
+    this.typingTimer = setTimeout(() => {
+      this.isTyping = false;
+    }, 15000);
+  }
+
+  private clearTypingTimer(): void {
+    if (this.typingTimer) {
+      clearTimeout(this.typingTimer);
+      this.typingTimer = null;
+    }
   }
 }
 
