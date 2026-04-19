@@ -86,6 +86,7 @@ Shift+Enter — New line`);
 
   let disabled = $derived(chatStore.connectionState !== 'connected');
   let hasText = $derived(inputText.trim().length > 0);
+  let charCount = $derived(inputText.length);
 </script>
 
 <div class="input-area">
@@ -124,6 +125,9 @@ Shift+Enter — New line`);
       </button>
     {/if}
   </div>
+  {#if charCount > 200}
+    <div class="char-counter">{charCount}</div>
+  {/if}
 </div>
 
 <style>
@@ -214,5 +218,12 @@ Shift+Enter — New line`);
 
   .send-btn:active {
     transform: scale(0.92);
+  }
+
+  .char-counter {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-meta);
+    padding: 0 20px 2px;
   }
 </style>
