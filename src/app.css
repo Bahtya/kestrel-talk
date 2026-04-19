@@ -140,24 +140,6 @@ body {
   outline-offset: 2px;
 }
 
-/* Skip to main content link */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--accent);
-  color: white;
-  padding: 8px 16px;
-  z-index: var(--z-toast);
-  font-size: 14px;
-  text-decoration: none;
-  border-radius: 0 0 var(--radius-sm) 0;
-}
-
-.skip-link:focus {
-  top: 0;
-}
-
 /* Screen reader only */
 .sr-only {
   position: absolute;
