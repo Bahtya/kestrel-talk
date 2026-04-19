@@ -10,6 +10,7 @@
   let notifEnabled = $state(loadSetting('notifEnabled', 'true') === 'true');
   let showSettings = $state(false);
   let notifPermission = $state<'default' | 'granted' | 'denied'>('default');
+  let validUrl = $derived(/^wss?:\/\/.+/.test(wsUrl.trim()));
 
   function updateNotifPermission() {
     if ('Notification' in window) {
@@ -18,6 +19,7 @@
   }
 
   function save() {
+    if (!validUrl) return;
     saveSetting('wsUrl', wsUrl);
     saveSetting('authToken', authToken);
     showSettings = false;
@@ -68,7 +70,10 @@
 
       <label class="field">
         <span class="label">WebSocket URL</span>
-        <input type="text" bind:value={wsUrl} placeholder="ws://127.0.0.1:8090" />
+        <input type="text" bind:value={wsUrl} placeholder="ws://127.0.0.1:8090" class:invalid={wsUrl && !validUrl} />
+        {#if wsUrl && !validUrl}
+          <span class="field-error">URL must start with ws:// or wss://</span>
+        {/if}
       </label>
 
       <label class="field">
@@ -97,7 +102,7 @@
       {/if}
 
       <div class="settings-actions">
-        <button class="save-btn" onclick={save}>Save & Reconnect</button>
+        <button class="save-btn" onclick={save} disabled={!validUrl}>Save & Reconnect</button>
         <button class="clear-btn" onclick={() => { chatStore.clearHistory(); showToast('History cleared', 'success'); }}>Clear History</button>
       </div>
     </div>
@@ -186,6 +191,16 @@
 
   input:focus {
     border-color: var(--accent);
+  }
+
+  input.invalid {
+    border-color: var(--danger);
+  }
+
+  .field-error {
+    font-size: 11px;
+    color: var(--danger);
+    margin-top: 3px;
   }
 
   .settings-actions {
