@@ -29,4 +29,16 @@ describe('theme', () => {
     expect(toggleTheme()).toBe('dark');
     expect(getTheme()).toBe('dark');
   });
+
+  it('persists theme across getTheme calls', () => {
+    setTheme('light');
+    // Simulate page reload — getTheme reads from localStorage
+    expect(getTheme()).toBe('light');
+    expect(localStorage.getItem('theme')).toBe('light');
+  });
+
+  it('reads persisted theme on first call', () => {
+    localStorage.setItem('theme', 'light');
+    expect(getTheme()).toBe('light');
+  });
 });

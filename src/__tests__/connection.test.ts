@@ -45,4 +45,45 @@ describe('WsConnection', () => {
     // @ts-expect-error test access
     expect(conn.connectionUrl).toBe('not-a-url');
   });
+
+  it('queues message when not connected', () => {
+    const conn = new WsConnection('ws://localhost:8090');
+    conn.send('test-message');
+    // Message should be queued, not thrown
+    expect(conn.isConnected).toBe(false);
+  });
+
+  it('queues message when ws.send throws', () => {
+    const conn = new WsConnection('ws://localhost:8090');
+    const mockWs = {
+      readyState: 1, // WebSocket.OPEN
+      send: vi.fn(() => { throw new Error('Network error'); }),
+    };
+    // @ts-expect-error test access
+    conn.ws = mockWs;
+    conn.send('test-message');
+    // Should not throw — message re-queued
+    expect(mockWs.send).toHaveBeenCalledWith('test-message');
+  });
+
+  it('stops flushQueue on send error', () => {
+    const conn = new WsConnection('ws://localhost:8090');
+    let callCount = 0;
+    const mockWs = {
+      readyState: 1,
+      send: vi.fn(() => {
+        callCount++;
+        if (callCount > 1) throw new Error('fail');
+      }),
+    };
+    // @ts-expect-error test access
+    conn.ws = mockWs;
+    // @ts-expect-error test access
+    conn.messageQueue = ['msg1', 'msg2', 'msg3'];
+    // @ts-expect-error test access
+    conn.flushQueue();
+    // Should stop after failure, msg3 remains queued
+    // @ts-expect-error test access
+    expect(conn.messageQueue.length).toBeGreaterThanOrEqual(1);
+  });
 });

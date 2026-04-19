@@ -274,8 +274,6 @@ body {
     border-color: #e0a0a0 !important;
     background: #fff5f5 !important;
   }
-    display: none !important;
-  }
 
   .thinking-block[open] .thinking-content {
     max-height: none;

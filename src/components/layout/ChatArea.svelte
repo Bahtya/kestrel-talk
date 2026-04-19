@@ -87,7 +87,7 @@ Escape — Close search/sidebar`);
 
 {#if mobileMenuOpen}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="sidebar-overlay" role="button" tabindex="-1" onclick={onclosemenu} onkeydown={(e) => { if (e.key === 'Escape') onclosemenu?.(); }}></div>
+  <div class="sidebar-overlay" role="button" tabindex="-1" aria-label="Close sidebar" onclick={onclosemenu} onkeydown={(e) => { if (e.key === 'Escape') onclosemenu?.(); }}></div>
 {/if}
 
 <style>

@@ -120,7 +120,13 @@ export class WsConnection {
 
   send(data: string): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(data);
+      try {
+        this.ws.send(data);
+      } catch {
+        if (this.messageQueue.length < MAX_QUEUE_SIZE) {
+          this.messageQueue.push(data);
+        }
+      }
     } else if (this.messageQueue.length < MAX_QUEUE_SIZE) {
       this.messageQueue.push(data);
     }
@@ -141,7 +147,11 @@ export class WsConnection {
   private flushQueue(): void {
     while (this.messageQueue.length > 0) {
       const msg = this.messageQueue.shift()!;
-      this.ws?.send(msg);
+      try {
+        this.ws?.send(msg);
+      } catch {
+        break;
+      }
     }
   }
 
