@@ -214,6 +214,7 @@ export class ChatStore {
 
   private handleBlockStart(blockId: string, responseId: string, blockType: Block['blockType'], language: string | null): void {
     if (!this.activeResponse || this.activeResponse.id !== responseId) return;
+    if (this.activeResponse.blocks.has(blockId)) return;
 
     const block: Block = {
       id: blockId,

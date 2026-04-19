@@ -228,7 +228,7 @@
     border: 1px solid var(--error-border-hover);
     color: var(--danger);
     font-size: 12px;
-    padding: 3px 8px;
+    padding: 6px 12px;
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: background var(--duration-fast);

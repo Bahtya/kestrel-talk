@@ -383,5 +383,40 @@ describe('ChatStore', () => {
       expect(store.messages.length).toBe(1);
       expect(store.messages[0].content).toBe('');
     });
+
+    it('ignores duplicate block_start for same block ID', () => {
+      const start: ServerEnvelope = { type: 'response_start', id: 'r1', reply_to: 'u1' };
+      // @ts-expect-error test access
+      store.handleEnvelope(start);
+      const bs1: ServerEnvelope = { type: 'block_start', id: 'b1', response_id: 'r1', block_type: 'text', language: null };
+      // @ts-expect-error test access
+      store.handleEnvelope(bs1);
+      const bs2: ServerEnvelope = { type: 'block_start', id: 'b1', response_id: 'r1', block_type: 'code', language: 'rust' };
+      // @ts-expect-error test access
+      store.handleEnvelope(bs2);
+      // Should have only 1 block (original text type preserved)
+      expect(store.activeResponse?.blocks.size).toBe(1);
+      expect(store.activeResponse?.blocks.get('b1')?.blockType).toBe('text');
+    });
+
+    it('ignores block_delta before block_start', () => {
+      const start: ServerEnvelope = { type: 'response_start', id: 'r1', reply_to: 'u1' };
+      // @ts-expect-error test access
+      store.handleEnvelope(start);
+      const delta: ServerEnvelope = { type: 'block_delta', id: 'b1', response_id: 'r1', content: 'orphan' };
+      // @ts-expect-error test access
+      store.handleEnvelope(delta);
+      // No blocks created
+      expect(store.activeResponse?.blocks.size).toBe(0);
+    });
+
+    it('ignores response_end without matching response_start', () => {
+      const end: ServerEnvelope = { type: 'response_end', id: 'r1' };
+      // @ts-expect-error test access
+      store.handleEnvelope(end);
+      // No message added, no crash
+      expect(store.messages.length).toBe(0);
+      expect(store.activeResponse).toBeNull();
+    });
   });
 });
