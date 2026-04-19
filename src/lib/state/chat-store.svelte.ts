@@ -63,6 +63,7 @@ export class ChatStore {
   }
 
   updateConnection(url: string, token?: string): void {
+    this.connection.disconnect();
     this.connection = this.createConnection(url, token);
   }
 
@@ -282,11 +283,10 @@ export class ChatStore {
 
   private handleError(id: string, code: string, content: string): void {
     this.lastError = `${code}: ${content}`;
-    // Preserve any partial blocks streamed before the error
-    const priorBlocks = this.activeResponse?.id === id
-      ? Array.from(this.activeResponse.blocks.values()).filter((b) => b.content.length > 0)
-      : [];
-    if (this.activeResponse?.id === id) {
+    // Preserve any partial blocks from active response before clearing
+    let priorBlocks: Block[] = [];
+    if (this.activeResponse) {
+      priorBlocks = Array.from(this.activeResponse.blocks.values()).filter((b) => b.content.length > 0);
       this.activeResponse = null;
     }
     const errorBlock: Block = {

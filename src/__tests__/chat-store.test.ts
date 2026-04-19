@@ -418,5 +418,32 @@ describe('ChatStore', () => {
       expect(store.messages.length).toBe(0);
       expect(store.activeResponse).toBeNull();
     });
+
+    it('preserves partial blocks when error has different ID', () => {
+      const start: ServerEnvelope = { type: 'response_start', id: 'r1', reply_to: 'u1' };
+      // @ts-expect-error test access
+      store.handleEnvelope(start);
+      const bs: ServerEnvelope = { type: 'block_start', id: 'b1', response_id: 'r1', block_type: 'text', language: null };
+      // @ts-expect-error test access
+      store.handleEnvelope(bs);
+      const delta: ServerEnvelope = { type: 'block_delta', id: 'b1', response_id: 'r1', content: 'partial text' };
+      // @ts-expect-error test access
+      store.handleEnvelope(delta);
+      // Error with different ID — partial response should still be preserved
+      const err: ServerEnvelope = { type: 'error', id: 'r2', code: 'timeout', content: 'Timed out' };
+      // @ts-expect-error test access
+      store.handleEnvelope(err);
+      expect(store.messages.length).toBe(1);
+      expect(store.messages[0].blocks.length).toBe(2); // partial text + error
+      expect(store.activeResponse).toBeNull();
+    });
+
+    it('disconnects old connection on updateConnection', () => {
+      const disconnectSpy = vi.fn();
+      // @ts-expect-error test access
+      store.connection = { disconnect: disconnectSpy, connect: vi.fn(), send: vi.fn() } as any;
+      store.updateConnection('ws://new-url:9999');
+      expect(disconnectSpy).toHaveBeenCalledOnce();
+    });
   });
 });
