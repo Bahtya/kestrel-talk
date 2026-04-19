@@ -4,6 +4,7 @@ import type { ConnectionState } from '../state/types';
 
 const PING_INTERVAL = 30000;
 const CONNECT_TIMEOUT = 10000;
+const MAX_QUEUE_SIZE = 100;
 const DEFAULT_URL = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8090';
 const DEFAULT_TOKEN = import.meta.env.VITE_AUTH_TOKEN || undefined;
 
@@ -98,7 +99,7 @@ export class WsConnection {
   send(data: string): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(data);
-    } else {
+    } else if (this.messageQueue.length < MAX_QUEUE_SIZE) {
       this.messageQueue.push(data);
     }
   }
