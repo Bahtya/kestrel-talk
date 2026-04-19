@@ -14,6 +14,18 @@
   let inputHistory: string[] = $state([]);
   let historyIndex = -1;
 
+  $effect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onResize = () => {
+      if (document.activeElement === textareaEl) {
+        textareaEl?.scrollIntoView({ block: 'center' });
+      }
+    };
+    vv.addEventListener('resize', onResize);
+    return () => vv.removeEventListener('resize', onResize);
+  });
+
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
