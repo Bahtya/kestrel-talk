@@ -42,7 +42,7 @@
     top: -100%;
     left: 0;
     background: var(--accent);
-    color: white;
+    color: var(--accent-fg);
     padding: 8px 16px;
     z-index: var(--z-toast);
     font-size: 14px;

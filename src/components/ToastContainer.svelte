@@ -36,7 +36,7 @@
     padding: 8px 16px;
     border-radius: var(--radius-md);
     font-size: 13px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow);
     border: 1px solid var(--border);
     animation: toast-in 0.2s ease-out;
     white-space: nowrap;

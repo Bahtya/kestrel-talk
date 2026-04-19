@@ -179,7 +179,7 @@
     justify-content: center;
     font-size: 48px;
     font-weight: 700;
-    color: white;
+    color: var(--accent-fg);
     opacity: 0.5;
   }
 
@@ -284,7 +284,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 8px var(--shadow);
     transition: background var(--duration-fast), transform var(--duration-fast);
     z-index: 2;
   }
@@ -299,7 +299,7 @@
     top: -6px;
     right: -6px;
     background: var(--accent);
-    color: white;
+    color: var(--accent-fg);
     font-size: 11px;
     font-weight: 600;
     min-width: 18px;

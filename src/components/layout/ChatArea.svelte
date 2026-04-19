@@ -132,7 +132,7 @@ Escape — Close search/sidebar`);
     justify-content: center;
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: var(--accent-fg);
     flex-shrink: 0;
   }
 

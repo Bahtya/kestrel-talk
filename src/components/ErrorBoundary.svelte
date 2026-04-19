@@ -91,7 +91,7 @@
 
   button {
     background: var(--accent);
-    color: white;
+    color: var(--accent-fg);
     border: none;
     padding: 8px 24px;
     border-radius: var(--radius-sm);

@@ -139,7 +139,7 @@
     border-radius: var(--radius-md);
     padding: 12px;
     margin-bottom: 8px;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 12px var(--shadow);
   }
 
   .settings-header {
@@ -212,7 +212,7 @@
   .save-btn {
     flex: 1;
     background: var(--accent);
-    color: white;
+    color: var(--accent-fg);
     border: none;
     padding: 6px 12px;
     border-radius: var(--radius-sm);

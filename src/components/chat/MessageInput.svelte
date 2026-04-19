@@ -219,7 +219,7 @@ Shift+Enter — New line`);
   .send-btn {
     background: var(--accent);
     border: none;
-    color: white;
+    color: var(--accent-fg);
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;

@@ -170,7 +170,7 @@
     justify-content: center;
     font-size: 20px;
     font-weight: 600;
-    color: white;
+    color: var(--accent-fg);
     flex-shrink: 0;
   }
 
