@@ -19,6 +19,6 @@ export function showNotification(title: string, body: string): void {
   if (!permissionGranted) return;
   if (document.hasFocus()) return;
   try {
-    new Notification(title, { body, icon: '/favicon.svg', silent: true });
+    new Notification(title, { body, icon: '/icon-192.png', silent: true });
   } catch { /* notification failed */ }
 }

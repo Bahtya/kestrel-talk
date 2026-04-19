@@ -74,7 +74,10 @@ export function validateMarkdownV2(content: string): V2ValidationResult {
   const errors: string[] = [];
 
   // Check for unbalanced __ (underline)
-  const underlineCount = (content.match(/(?<!\*)\*\*(?!\*)/g) || []).length;
+  const underlineMatches = content.match(/(?<!_)__(?!_)/g);
+  if (underlineMatches && underlineMatches.length % 2 !== 0) {
+    errors.push('Unbalanced __ underline markers');
+  }
 
   // Check for unbalanced || (spoiler)
   const spoilerMatches = content.match(/\|\|/g);
