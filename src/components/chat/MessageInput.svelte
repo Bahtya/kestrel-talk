@@ -147,12 +147,12 @@ Shift+Enter — New line`);
     margin: 0 12px 6px;
     font-size: 13px;
     color: var(--text-secondary);
-    background: rgba(229, 57, 53, 0.08);
+    background: var(--error-bg);
     border-radius: var(--radius-md);
   }
 
   .connection-banner.connecting {
-    background: rgba(255, 193, 7, 0.08);
+    background: var(--warning-bg);
   }
 
   .reconnect-btn {

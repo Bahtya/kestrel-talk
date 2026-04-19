@@ -29,6 +29,7 @@
   --error-border: rgba(229, 57, 53, 0.2);
   --error-bg-hover: rgba(229, 57, 53, 0.25);
   --error-border-hover: rgba(229, 57, 53, 0.3);
+  --warning-bg: rgba(255, 193, 7, 0.08);
 
   --scrollbar-track: #0e1621;
   --scrollbar-thumb: #2b3945;
@@ -83,6 +84,7 @@
   --error-border: rgba(229, 57, 53, 0.15);
   --error-bg-hover: rgba(229, 57, 53, 0.15);
   --error-border-hover: rgba(229, 57, 53, 0.25);
+  --warning-bg: rgba(255, 193, 7, 0.06);
 
   --scrollbar-track: #e8e0db;
   --scrollbar-thumb: #c4c4c4;
