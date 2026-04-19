@@ -678,4 +678,26 @@ test.describe('kestrel-talk browser E2E', () => {
     const count = await bubbles.count();
     expect(count).toBeGreaterThanOrEqual(7);
   });
+
+  test('35. Character counter appears for long input', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('.message-list');
+
+    const textarea = page.locator('textarea');
+    // Type 201+ characters
+    await textarea.fill('a'.repeat(201));
+    const counter = page.locator('.char-counter');
+    await expect(counter).toBeVisible();
+    expect(await counter.textContent()).toBe('201');
+  });
+
+  test('36. Ctrl+Shift+T toggles theme', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('.message-list');
+
+    const initialTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    await page.keyboard.press('Control+Shift+T');
+    const newTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(newTheme).not.toBe(initialTheme);
+  });
 });
