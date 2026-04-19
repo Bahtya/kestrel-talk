@@ -36,7 +36,7 @@
 </script>
 
 {#if hasError}
-  <div class="error-boundary">
+  <div class="error-boundary" role="alert">
     <div class="error-content">
       <div class="error-icon">!</div>
       <h2>Something went wrong</h2>

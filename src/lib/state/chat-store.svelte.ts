@@ -25,41 +25,47 @@ export class ChatStore {
 
   constructor() {
     this.messages = loadMessages();
-    this.connection = new WsConnection();
-    this.connection.onStateChange((state) => {
-      this.connectionState = state;
-      if (state === 'connected') {
-        this.reconnectAttempt = 0;
-        this.lastError = '';
-        if (!this.wasConnected) {
-          showToast('Connected to kestrel-agent', 'success');
-          this.wasConnected = true;
-        }
-      } else if (state === 'disconnected' || state === 'error') {
-        this.reconnectAttempt++;
-        if (state === 'error') this.lastError = 'Connection failed';
-        // Save partial response as message if stream was interrupted
-        if (this.activeResponse) {
-          const blocks = Array.from(this.activeResponse.blocks.values());
-          if (blocks.some((b) => b.content.length > 0)) {
-            const content = blocks.map((b) => b.content).join('\n');
-            const msg: ChatMessage = {
-              id: this.activeResponse.id,
-              role: 'assistant',
-              content,
-              blocks,
-              timestamp: new Date(),
-            };
-            this.messages = [...this.messages, msg];
-            this.persist();
-          }
-          this.activeResponse = null;
-        }
-        this.isTyping = false;
-      }
-    });
-    this.connection.onEnvelope((env) => this.handleEnvelope(env));
+    this.connection = this.createConnection();
+  }
 
+  private createConnection(url?: string, token?: string): WsConnection {
+    const conn = new WsConnection(url, token);
+    conn.onStateChange((state) => this.handleStateChange(state));
+    conn.onEnvelope((env) => this.handleEnvelope(env));
+    return conn;
+  }
+
+  private handleStateChange(state: ConnectionState): void {
+    this.connectionState = state;
+    if (state === 'connected') {
+      this.reconnectAttempt = 0;
+      this.lastError = '';
+      if (!this.wasConnected) {
+        showToast('Connected to kestrel-agent', 'success');
+        this.wasConnected = true;
+      }
+    } else if (state === 'disconnected' || state === 'error') {
+      this.reconnectAttempt++;
+      if (state === 'error') this.lastError = 'Connection failed';
+      // Save partial response as message if stream was interrupted
+      if (this.activeResponse) {
+        const blocks = Array.from(this.activeResponse.blocks.values());
+        if (blocks.some((b) => b.content.length > 0)) {
+          const content = blocks.map((b) => b.content).join('\n');
+          const msg: ChatMessage = {
+            id: this.activeResponse.id,
+            role: 'assistant',
+            content,
+            blocks,
+            timestamp: new Date(),
+          };
+          this.messages = [...this.messages, msg];
+          this.persist();
+        }
+        this.activeResponse = null;
+      }
+      this.isTyping = false;
+    }
   }
 
   connect(): void {
@@ -71,11 +77,7 @@ export class ChatStore {
   }
 
   updateConnection(url: string, token?: string): void {
-    this.connection = new WsConnection(url, token);
-    this.connection.onStateChange((state) => {
-      this.connectionState = state;
-    });
-    this.connection.onEnvelope((env) => this.handleEnvelope(env));
+    this.connection = this.createConnection(url, token);
   }
 
   clearHistory(): void {
