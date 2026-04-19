@@ -9,8 +9,22 @@ export function exportChatAsMarkdown(messages: ChatMessage[]): void {
     const role = msg.role === 'user' ? 'You' : 'Agent';
     const body = msg.blocks.length > 0
       ? msg.blocks.map((b) => {
-          if (b.blockType === 'code' && b.language) return '```' + b.language + '\n' + b.content + '\n```';
-          return b.content;
+          switch (b.blockType) {
+            case 'code':
+              return '```' + (b.language ?? '') + '\n' + b.content + '\n```';
+            case 'thinking':
+              return '<details>\n<summary>Thinking</summary>\n\n' + b.content + '\n\n</details>';
+            case 'tool_call':
+              return '**Tool Call:**\n```json\n' + b.content + '\n```';
+            case 'tool_result':
+              return '**Tool Result:**\n```json\n' + b.content + '\n```';
+            case 'image':
+              return `![${b.imageCaption ?? 'image'}](${b.imageUrl ?? ''})`;
+            case 'error':
+              return `> **Error (${b.errorCode ?? 'unknown'}):** ${b.content}`;
+            default:
+              return b.content;
+          }
         }).join('\n\n')
       : msg.content;
     return `[${time}] ${role}:\n${body}`;
