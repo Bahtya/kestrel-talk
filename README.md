@@ -93,7 +93,7 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (120 tests, 13 files)
+# Unit tests (122 tests, 13 files)
 npm test
 
 # Browser E2E tests (36 tests — real Chromium)
