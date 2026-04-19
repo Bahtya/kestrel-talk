@@ -93,7 +93,7 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (114 tests, 13 files)
+# Unit tests (115 tests, 13 files)
 npm test
 
 # Browser E2E tests (34 tests — real Chromium)
@@ -155,7 +155,7 @@ src/
 │   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar, ConnectionSettings
 │   ├── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
 │   └── ToastContainer.svelte, ErrorBoundary.svelte
-└── __tests__/       Unit tests (114 tests, 13 files)
+└── __tests__/       Unit tests (115 tests, 13 files)
 ```
 
 ## License
