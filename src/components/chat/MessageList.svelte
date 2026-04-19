@@ -38,6 +38,26 @@
     autoScroll();
   });
 
+  // Update document title with unread count when page is not focused
+  $effect(() => {
+    const badge = unseenBadge;
+    if (badge && !document.hasFocus()) {
+      document.title = `(${badge}) kestrel-talk`;
+    } else {
+      document.title = 'kestrel-talk';
+    }
+  });
+
+  // Reset title and badge when page regains focus
+  $effect(() => {
+    function onFocus() {
+      document.title = 'kestrel-talk';
+      unseenBadge = '';
+    }
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  });
+
   $effect(() => {
     if (chatStore.activeResponse) {
       chatStore.activeResponse.blockOrder.length;
