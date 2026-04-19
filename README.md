@@ -92,10 +92,10 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (98 tests, 12 files)
+# Unit tests (103 tests, 12 files)
 npm test
 
-# Browser E2E tests (26 tests — real Chromium)
+# Browser E2E tests (29 tests — real Chromium)
 npx playwright install chromium   # first time only
 npx playwright test
 

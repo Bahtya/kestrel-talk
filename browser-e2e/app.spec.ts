@@ -538,4 +538,49 @@ test.describe('kestrel-talk browser E2E', () => {
     const highlighted = page.locator('.search-highlight-active');
     await expect(highlighted).toBeVisible({ timeout: 3000 });
   });
+
+  test('27. Connected toast appears on first connection', async ({ page }) => {
+    await page.goto('/');
+    // Wait for connection and toast
+    const toast = page.locator('.toast.success');
+    await expect(toast).toContainText('Connected', { timeout: 5000 });
+  });
+
+  test('28. Message timestamps are visible', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    const textarea = page.locator('textarea');
+    await textarea.fill('timestamp test');
+    await textarea.press('Enter');
+    await page.waitForTimeout(2000);
+
+    // User message should have a time indicator
+    const bubbleTime = page.locator('.bubble-time').first();
+    await expect(bubbleTime).toBeVisible();
+  });
+
+  test('29. Settings panel toggles', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Click settings gear
+    const settingsBtn = page.locator('.settings-toggle');
+    await settingsBtn.click();
+    await page.waitForTimeout(300);
+
+    // Settings panel should be visible
+    const panel = page.locator('.settings-panel');
+    await expect(panel).toBeVisible();
+
+    // Should have WebSocket URL input
+    const wsInput = page.locator('input[placeholder="ws://127.0.0.1:8090"]');
+    await expect(wsInput).toBeVisible();
+
+    // Close settings
+    const closeBtn = page.locator('.close-btn');
+    await closeBtn.click();
+    await page.waitForTimeout(300);
+    await expect(panel).not.toBeVisible();
+  });
 });
