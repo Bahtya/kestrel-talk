@@ -14,7 +14,7 @@
 </script>
 
 <details class="thinking-block" bind:open={expanded}>
-  <summary class="thinking-header" {ariaLabel}>
+  <summary class="thinking-header" aria-label={ariaLabel}>
     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="chevron">
       <path d="M7 10l5 5 5-5z" />
     </svg>
