@@ -1,7 +1,7 @@
 import { WsConnection } from '../ws/connection';
 import { createMessage, type ServerEnvelope } from '../ws/protocol';
 import type { ConnectionState, ChatMessage, Block, ActiveResponse } from './types';
-import { saveMessages, loadMessages } from '../utils/storage';
+import { saveMessages, loadMessages, showToast } from '../utils/storage';
 import { playNotification, playSend } from '../utils/notify';
 import { showNotification } from '../utils/browser-notify';
 
@@ -16,6 +16,7 @@ export class ChatStore {
   isTyping = $state(false);
 
   private connection: WsConnection;
+  private wasConnected = false;
   private v1StreamId: string | null = null;
 
   private persist(): void {
@@ -30,6 +31,10 @@ export class ChatStore {
       if (state === 'connected') {
         this.reconnectAttempt = 0;
         this.lastError = '';
+        if (!this.wasConnected) {
+          showToast('Connected to kestrel-agent', 'success');
+          this.wasConnected = true;
+        }
       } else if (state === 'disconnected' || state === 'error') {
         this.reconnectAttempt++;
         if (state === 'error') this.lastError = 'Connection failed';

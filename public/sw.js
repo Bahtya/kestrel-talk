@@ -1,5 +1,5 @@
 const CACHE = 'kestrel-talk-v2';
-const PRECACHE = ['/', '/index.html', '/favicon.svg', '/manifest.webmanifest'];
+const PRECACHE = ['/', '/index.html', '/favicon.svg', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
