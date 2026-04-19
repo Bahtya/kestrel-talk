@@ -1,4 +1,4 @@
-const CACHE = 'kestrel-talk-v4';
+const CACHE = 'kestrel-talk-v5';
 const PRECACHE = ['/', '/index.html', '/favicon.svg', '/favicon.ico', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', (e) => {

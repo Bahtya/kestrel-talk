@@ -67,7 +67,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(229, 57, 53, 0.15);
+    background: var(--error-bg);
     color: var(--danger);
     font-size: 24px;
     font-weight: 700;

@@ -25,6 +25,10 @@
   --bg-overlay: rgba(255, 255, 255, 0.08);
   --bg-overlay-hover: rgba(255, 255, 255, 0.15);
   --danger: #e53935;
+  --error-bg: rgba(229, 57, 53, 0.1);
+  --error-border: rgba(229, 57, 53, 0.2);
+  --error-bg-hover: rgba(229, 57, 53, 0.25);
+  --error-border-hover: rgba(229, 57, 53, 0.3);
 
   --scrollbar-track: #0e1621;
   --scrollbar-thumb: #2b3945;
@@ -74,7 +78,11 @@
   --border-subtle: rgba(0, 0, 0, 0.06);
   --bg-overlay: rgba(0, 0, 0, 0.05);
   --bg-overlay-hover: rgba(0, 0, 0, 0.1);
-  --danger: #e53935;
+  --danger: #c62828;
+  --error-bg: rgba(229, 57, 53, 0.08);
+  --error-border: rgba(229, 57, 53, 0.15);
+  --error-bg-hover: rgba(229, 57, 53, 0.15);
+  --error-border-hover: rgba(229, 57, 53, 0.25);
 
   --scrollbar-track: #e8e0db;
   --scrollbar-thumb: #c4c4c4;

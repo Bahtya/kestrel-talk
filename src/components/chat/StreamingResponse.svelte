@@ -89,8 +89,8 @@
     flex-direction: column;
     gap: 4px;
     padding: 8px 12px;
-    background: rgba(229, 57, 53, 0.1);
-    border: 1px solid rgba(229, 57, 53, 0.2);
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
     border-radius: var(--radius-sm);
     font-size: 13px;
   }
@@ -100,8 +100,8 @@
   }
 
   @keyframes error-pulse {
-    0%, 100% { border-color: rgba(229, 57, 53, 0.2); }
-    50% { border-color: rgba(229, 57, 53, 0.5); }
+    0%, 100% { border-color: var(--error-border); }
+    50% { border-color: var(--error-border-hover); }
   }
 
   .error-code {

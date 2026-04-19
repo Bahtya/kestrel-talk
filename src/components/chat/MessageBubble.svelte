@@ -184,8 +184,8 @@
     flex-direction: column;
     gap: 4px;
     padding: 8px 12px;
-    background: rgba(229, 57, 53, 0.1);
-    border: 1px solid rgba(229, 57, 53, 0.2);
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
     border-radius: var(--radius-sm);
     font-size: 13px;
   }
@@ -213,8 +213,8 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    background: rgba(229, 57, 53, 0.15);
-    border: 1px solid rgba(229, 57, 53, 0.3);
+    background: var(--error-border);
+    border: 1px solid var(--error-border-hover);
     color: var(--danger);
     font-size: 12px;
     padding: 3px 8px;
@@ -224,7 +224,7 @@
   }
 
   .retry-btn:hover {
-    background: rgba(229, 57, 53, 0.25);
+    background: var(--error-bg-hover);
   }
 
   @media (max-width: 768px) {
