@@ -43,11 +43,11 @@
   }
 
   .toast.success {
-    border-color: rgba(76, 175, 80, 0.4);
+    border-color: var(--accent-online);
   }
 
   .toast.error {
-    border-color: rgba(229, 57, 53, 0.4);
+    border-color: var(--error-border);
   }
 
   @keyframes toast-in {
