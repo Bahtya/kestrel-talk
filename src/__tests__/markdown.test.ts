@@ -105,4 +105,28 @@ describe('renderContent', () => {
     expect(result).not.toContain('<script');
     expect(result).toContain('safe');
   });
+
+  it('renders markdown image', () => {
+    const result = renderContent('![alt text](https://example.com/img.png)');
+    expect(result).toContain('<img');
+    expect(result).toContain('alt="alt text"');
+  });
+
+  it('renders link with target blank', () => {
+    const result = renderContent('[link](https://example.com)');
+    expect(result).toContain('target="_blank"');
+    expect(result).toContain('rel="noopener noreferrer"');
+  });
+
+  it('renders heading levels', () => {
+    const result = renderContent('## Heading');
+    expect(result).toContain('<h2');
+  });
+
+  it('handles deeply nested markdown', () => {
+    const result = renderContent('> **bold** and `code`');
+    expect(result).toContain('<blockquote');
+    expect(result).toContain('<strong>bold</strong>');
+    expect(result).toContain('<code>code</code>');
+  });
 });
