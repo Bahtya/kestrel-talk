@@ -13,7 +13,7 @@ export interface BlockStartEnvelope {
   type: 'block_start';
   id: string;
   response_id: string;
-  block_type: 'text' | 'code' | 'thinking' | 'tool_call' | 'tool_result';
+  block_type: 'text' | 'code' | 'thinking' | 'tool_call' | 'tool_result' | 'image' | 'error';
   language?: string | null;
 }
 
@@ -110,7 +110,7 @@ export type ClientEnvelope =
   | PingEnvelope
   | AuthEnvelope;
 
-const VALID_BLOCK_TYPES = new Set(['text', 'code', 'thinking', 'tool_call', 'tool_result']);
+const VALID_BLOCK_TYPES = new Set(['text', 'code', 'thinking', 'tool_call', 'tool_result', 'image', 'error']);
 const MAX_CONTENT_LENGTH = 100_000; // 100KB per content field
 const MAX_RAW_SIZE = 1_000_000; // 1MB max envelope size
 const VALID_IMAGE_PROTOCOLS = new Set(['https:', 'http:']);
