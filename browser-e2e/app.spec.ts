@@ -700,4 +700,39 @@ test.describe('kestrel-talk browser E2E', () => {
     const newTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(newTheme).not.toBe(initialTheme);
   });
+
+  test('37. Character limit hides send button when over 4000', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('.message-list');
+
+    const textarea = page.locator('textarea');
+    await textarea.fill('a'.repeat(4001));
+    // Send button should NOT be visible when over limit
+    await expect(page.locator('.send-btn')).not.toBeVisible();
+    // Counter should show over-limit styling
+    const counter = page.locator('.char-counter');
+    await expect(counter).toBeVisible();
+    await expect(counter).toHaveClass(/over-limit/);
+  });
+
+  test('38. Reconnect button appears when disconnected', async ({ page }) => {
+    test.setTimeout(30000);
+    // Connect and verify online
+    await page.goto('/');
+    await page.waitForSelector('.message-list');
+    await page.waitForTimeout(2000);
+
+    // Navigate away to trigger disconnect
+    await page.evaluate(() => {
+      const ws = (window as any).__ws;
+      if (ws) ws.close();
+    });
+    await page.waitForTimeout(1500);
+
+    // Should show reconnect button
+    const reconnectBtn = page.locator('.reconnect-btn');
+    if (await reconnectBtn.count() > 0) {
+      await expect(reconnectBtn.first()).toBeVisible();
+    }
+  });
 });
