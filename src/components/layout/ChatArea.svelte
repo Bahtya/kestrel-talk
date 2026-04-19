@@ -191,7 +191,7 @@ Escape — Close search/sidebar`);
       display: block;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: var(--overlay-modal);
       z-index: var(--z-overlay);
     }
   }
