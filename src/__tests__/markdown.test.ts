@@ -20,6 +20,12 @@ describe('renderContent', () => {
     expect(result).toContain('kestrel');
   });
 
+  it('opens links in new tab with noopener', () => {
+    const result = renderContent('[link](https://example.com)');
+    expect(result).toContain('target="_blank"');
+    expect(result).toContain('rel="noopener noreferrer"');
+  });
+
   it('renders HTML passthrough', () => {
     const result = renderContent('<div class="test">hello</div>');
     expect(result).toContain('hello');
