@@ -249,6 +249,22 @@ describe('ChatStore', () => {
       // v1 should be ignored since activeResponse already exists
       expect(store.activeResponse!.blockOrder).toEqual([]);
     });
+
+    it('recovers v1 streaming after savePartialResponse', () => {
+      // Start v1 streaming
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'streaming', id: 'v1-1', chunk: 'hello', done: false });
+      expect(store.activeResponse).not.toBeNull();
+      // Simulate disconnect (calls savePartialResponse)
+      store.savePartialResponse();
+      expect(store.activeResponse).toBeNull();
+      // New v1 stream after reconnect should work
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'streaming', id: 'v1-2', chunk: 'new', done: false });
+      expect(store.activeResponse).not.toBeNull();
+      const block = store.activeResponse!.blocks.values().next().value!;
+      expect(block.content).toBe('new');
+    });
   });
 
   describe('retry', () => {

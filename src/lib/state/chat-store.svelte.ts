@@ -65,6 +65,7 @@ export class ChatStore {
   }
 
   savePartialResponse(): void {
+    this.v1StreamId = null;
     if (!this.activeResponse) return;
     const blocks = Array.from(this.activeResponse.blocks.values());
     if (blocks.some((b) => b.content.length > 0)) {
