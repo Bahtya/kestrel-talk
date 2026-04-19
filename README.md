@@ -12,7 +12,8 @@ Web UI for [kestrel-agent](https://github.com/Bahtya/kestrel-agent) — a real-t
 - **Auto-reconnect** — exponential backoff with jitter, connection timeout, manual reconnect button
 - **Message persistence** — localStorage with automatic save/load
 - **Protocol validation** — strict envelope parsing rejects malformed data
-- **Auth support** — token-based WebSocket authentication
+- **Auth support** — token-based WebSocket authentication (query param + message)
+- **Unread badge** — document title shows unread count when page is unfocused
 - **Chat search** — Ctrl+F with match navigation and highlighting
 - **Input history** — ↑/↓ arrow keys to recall previous messages
 - **Slash commands** — `/clear`, `/help`, `/export`
@@ -92,14 +93,14 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (105 tests, 12 files)
+# Unit tests (110 tests, 13 files)
 npm test
 
 # Browser E2E tests (31 tests — real Chromium)
 npx playwright install chromium   # first time only
 npx playwright test
 
-# Protocol E2E tests (12 tests)
+# Protocol E2E tests (14 tests)
 node e2e-test.mjs
 ```
 
@@ -154,7 +155,7 @@ src/
 │   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar, ConnectionSettings
 │   ├── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
 │   └── ToastContainer.svelte, ErrorBoundary.svelte
-└── __tests__/       Unit tests (105 tests, 12 files)
+└── __tests__/       Unit tests (110 tests, 13 files)
 ```
 
 ## License
