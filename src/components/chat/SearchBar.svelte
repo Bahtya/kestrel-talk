@@ -137,7 +137,7 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 2px;
+    padding: 8px;
     border-radius: 4px;
     display: flex;
     align-items: center;

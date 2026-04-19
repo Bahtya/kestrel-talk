@@ -31,7 +31,7 @@
 
   function send() {
     const text = inputText.trim();
-    if (!text) return;
+    if (!text || text.length > MAX_LENGTH) return;
 
     if (text === '/clear') {
       chatStore.clearHistory();
@@ -73,6 +73,7 @@ Shift+Enter — New line`);
     onsend(text);
     inputText = '';
     resetHeight();
+    textareaEl?.focus();
   }
 
   function autoResize() {
@@ -86,9 +87,12 @@ Shift+Enter — New line`);
     textareaEl.style.height = 'auto';
   }
 
+  const MAX_LENGTH = 4000;
+
   let disabled = $derived(chatStore.connectionState !== 'connected');
   let hasText = $derived(inputText.trim().length > 0);
   let charCount = $derived(inputText.length);
+  let overLimit = $derived(charCount > MAX_LENGTH);
 </script>
 
 <div class="input-area">
@@ -121,14 +125,14 @@ Shift+Enter — New line`);
       rows="1"
       {disabled}
     ></textarea>
-    {#if hasText && !disabled}
+    {#if hasText && !disabled && !overLimit}
       <button class="send-btn" onclick={send} aria-label="Send message">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
       </button>
     {/if}
   </div>
   {#if charCount > 200}
-    <div class="char-counter">{charCount}</div>
+    <div class="char-counter" class:over-limit>{charCount} / {MAX_LENGTH}</div>
   {/if}
 </div>
 
@@ -227,5 +231,10 @@ Shift+Enter — New line`);
     font-size: 11px;
     color: var(--text-meta);
     padding: 0 20px 2px;
+  }
+
+  .char-counter.over-limit {
+    color: var(--danger);
+    font-weight: 600;
   }
 </style>

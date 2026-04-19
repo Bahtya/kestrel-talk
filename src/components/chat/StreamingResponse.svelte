@@ -33,7 +33,7 @@
         {:else if block.blockType === 'image'}
           <ImageBlock src={block.imageUrl ?? ''} caption={block.imageCaption} />
         {:else if block.blockType === 'error'}
-          <div class="error-block" class:streaming={block.status === 'streaming'}>
+          <div class="error-block" class:streaming={block.status === 'streaming'} role="alert">
             <span class="error-code">{block.errorCode ?? 'error'}</span>
             <span class="error-text">{block.content}</span>
           </div>

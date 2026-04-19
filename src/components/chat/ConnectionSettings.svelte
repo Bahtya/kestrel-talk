@@ -70,9 +70,9 @@
 
       <label class="field">
         <span class="label">WebSocket URL</span>
-        <input type="text" bind:value={wsUrl} placeholder="ws://127.0.0.1:8090" class:invalid={wsUrl && !validUrl} />
+        <input type="text" bind:value={wsUrl} placeholder="ws://127.0.0.1:8090" class:invalid={wsUrl && !validUrl} aria-describedby="ws-url-error" />
         {#if wsUrl && !validUrl}
-          <span class="field-error">URL must start with ws:// or wss://</span>
+          <span id="ws-url-error" class="field-error" role="alert">URL must start with ws:// or wss://</span>
         {/if}
       </label>
 
@@ -119,7 +119,7 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
+    padding: 10px;
     border-radius: 4px;
     transition: background 0.15s, color 0.15s;
   }

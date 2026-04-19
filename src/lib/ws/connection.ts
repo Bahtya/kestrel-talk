@@ -118,18 +118,23 @@ export class WsConnection {
     this.setState('disconnected');
   }
 
-  send(data: string): void {
+  send(data: string): boolean {
     if (this.ws?.readyState === WebSocket.OPEN) {
       try {
         this.ws.send(data);
+        return true;
       } catch {
         if (this.messageQueue.length < MAX_QUEUE_SIZE) {
           this.messageQueue.push(data);
+          return true;
         }
+        return false;
       }
     } else if (this.messageQueue.length < MAX_QUEUE_SIZE) {
       this.messageQueue.push(data);
+      return true;
     }
+    return false;
   }
 
   get isConnected(): boolean {

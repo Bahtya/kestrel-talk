@@ -141,7 +141,10 @@ export class ChatStore {
     this.persist();
     playSend();
     const envelope = createMessage(text);
-    this.connection.send(JSON.stringify(envelope));
+    const sent = this.connection.send(JSON.stringify(envelope));
+    if (!sent) {
+      showToast('Message queue full — please wait', 'error');
+    }
   }
 
   private handleEnvelope(env: ServerEnvelope): void {

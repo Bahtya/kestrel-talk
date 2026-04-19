@@ -48,8 +48,8 @@ describe('WsConnection', () => {
 
   it('queues message when not connected', () => {
     const conn = new WsConnection('ws://localhost:8090');
-    conn.send('test-message');
-    // Message should be queued, not thrown
+    const result = conn.send('test-message');
+    expect(result).toBe(true);
     expect(conn.isConnected).toBe(false);
   });
 
@@ -82,8 +82,15 @@ describe('WsConnection', () => {
     conn.messageQueue = ['msg1', 'msg2', 'msg3'];
     // @ts-expect-error test access
     conn.flushQueue();
-    // Should stop after failure, msg3 remains queued
     // @ts-expect-error test access
     expect(conn.messageQueue.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('returns false when queue is full', () => {
+    const conn = new WsConnection('ws://localhost:8090');
+    // @ts-expect-error test access
+    conn.messageQueue = new Array(100).fill('x');
+    const result = conn.send('overflow');
+    expect(result).toBe(false);
   });
 });
