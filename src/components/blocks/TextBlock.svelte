@@ -7,18 +7,44 @@
   }
 
   let { content, streaming = false }: Props = $props();
+  let blockEl: HTMLDivElement | undefined = $state();
 
   let renderedHtml = $derived(renderContent(content));
 
-  function handleClick(e: MouseEvent) {
-    const target = e.target as HTMLElement;
+  $effect(() => {
+    renderedHtml;
+    if (!blockEl) return;
+    blockEl.querySelectorAll('.spoiler:not([tabindex])').forEach((el) => {
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', 'Reveal spoiler');
+    });
+  });
+
+  function toggleSpoiler(target: HTMLElement) {
     if (target.classList.contains('spoiler')) {
-      target.classList.toggle('revealed');
+      const revealed = target.classList.toggle('revealed');
+      target.setAttribute('aria-label', revealed ? 'Spoiler revealed' : 'Reveal spoiler');
+    }
+  }
+
+  function handleClick(e: MouseEvent) {
+    toggleSpoiler(e.target as HTMLElement);
+  }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('spoiler')) {
+        e.preventDefault();
+        toggleSpoiler(target);
+      }
     }
   }
 </script>
 
-<div class="text-block" class:streaming onclick={handleClick}>
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+<div class="text-block" class:streaming bind:this={blockEl} onclick={handleClick} onkeydown={handleKeydown}>
   {@html renderedHtml}
   {#if streaming}
     <span class="cursor"></span>
