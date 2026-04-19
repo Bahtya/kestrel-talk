@@ -78,4 +78,31 @@ describe('renderContent', () => {
     expect(result).toContain('<span class="spoiler">secret</span>');
     expect(result).not.toContain('onclick');
   });
+
+  it('renders MarkdownV2 underline', () => {
+    const result = renderContent('__underlined text__');
+    expect(result).toContain('<u>underlined text</u>');
+  });
+
+  it('renders MarkdownV2 single-tilde strikethrough', () => {
+    const result = renderContent('~struck~');
+    expect(result).toContain('<s>struck</s>');
+  });
+
+  it('renders nested bold and italic', () => {
+    const result = renderContent('***bold italic***');
+    expect(result).toContain('<strong>');
+    expect(result).toContain('<em>');
+  });
+
+  it('renders line breaks with breaks option', () => {
+    const result = renderContent('line 1\nline 2');
+    expect(result).toContain('<br>');
+  });
+
+  it('strips script tags from HTML passthrough', () => {
+    const result = renderContent('<div>safe</div><script>alert(1)</script>');
+    expect(result).not.toContain('<script');
+    expect(result).toContain('safe');
+  });
 });
