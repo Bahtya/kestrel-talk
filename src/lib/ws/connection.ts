@@ -38,7 +38,18 @@ export class WsConnection {
   }
 
   connect(): void {
+    // Clean up any existing connection to prevent stale onclose handlers
+    if (this.ws) {
+      this.intentionalClose = true;
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.close();
+      this.ws = null;
+    }
     this.intentionalClose = false;
+    this.reconnect.cancel();
+    this.clearConnectTimeout();
+    this.stopPing();
     this.setState('connecting');
 
     try {

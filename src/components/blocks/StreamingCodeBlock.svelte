@@ -11,26 +11,34 @@
 
   let highlighted = $state('');
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  let aborted = false;
 
   $effect(() => {
     const c = content;
     const d = done;
     const l = language;
 
+    aborted = false;
+
     // Try loading the language on first encounter
     if (l) loadLanguage(l);
 
+    const doHighlight = () => {
+      highlightCode(c, l ?? 'text').then((h) => {
+        if (!aborted) highlighted = h;
+      });
+    };
+
     if (d) {
       debounceTimer && clearTimeout(debounceTimer);
-      highlightCode(c, l ?? 'text').then((h) => { highlighted = h; });
+      doHighlight();
     } else {
       debounceTimer && clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        highlightCode(c, l ?? 'text').then((h) => { highlighted = h; });
-      }, 150);
+      debounceTimer = setTimeout(doHighlight, 150);
     }
 
     return () => {
+      aborted = true;
       debounceTimer && clearTimeout(debounceTimer);
     };
   });

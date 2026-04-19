@@ -12,6 +12,7 @@
   onMount(() => {
     chatStore.connect();
     initNotifications();
+    return () => chatStore.disconnect();
   });
 </script>
 

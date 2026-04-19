@@ -41,6 +41,7 @@
   $effect(() => {
     if (chatStore.activeResponse) {
       chatStore.activeResponse.blockOrder.length;
+      chatStore.activeResponse.blocks.size;
       autoScroll();
     }
   });
