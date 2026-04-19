@@ -321,4 +321,67 @@ describe('ChatStore', () => {
       expect(showToast).toHaveBeenCalledWith('No user message found to retry', 'error');
     });
   });
+
+  describe('edge cases', () => {
+    it('ignores block_delta for unknown response', () => {
+      const env: ServerEnvelope = {
+        type: 'block_delta',
+        id: 'b1',
+        response_id: 'unknown-response',
+        content: 'orphan delta',
+      };
+      // @ts-expect-error test access
+      store.handleEnvelope(env);
+      expect(store.activeResponse).toBeNull();
+    });
+
+    it('handles image message', () => {
+      const env: ServerEnvelope = {
+        type: 'image',
+        id: 'img1',
+        url: 'https://example.com/test.png',
+        caption: 'Test image',
+      };
+      // @ts-expect-error test access
+      store.handleEnvelope(env);
+      expect(store.messages.length).toBe(1);
+      expect(store.messages[0].blocks[0].blockType).toBe('image');
+      expect(store.messages[0].blocks[0].imageUrl).toBe('https://example.com/test.png');
+    });
+
+    it('handles multiple sequential errors', () => {
+      const env1: ServerEnvelope = { type: 'error', id: 'e1', code: 'timeout', content: 'Timeout' };
+      const env2: ServerEnvelope = { type: 'error', id: 'e2', code: 'rate_limit', content: 'Rate limited' };
+      // @ts-expect-error test access
+      store.handleEnvelope(env1);
+      // @ts-expect-error test access
+      store.handleEnvelope(env2);
+      expect(store.messages.length).toBe(2);
+      expect(store.messages[0].blocks[0].errorCode).toBe('timeout');
+      expect(store.messages[1].blocks[0].errorCode).toBe('rate_limit');
+    });
+
+    it('savePartialResponse clears v1StreamId', () => {
+      store.connectionState = 'connected';
+      // Start v1 streaming
+      const env: ServerEnvelope = { type: 'streaming', id: 's1', chunk: 'hello', done: false };
+      // @ts-expect-error test access
+      store.handleEnvelope(env);
+      expect(store.activeResponse).not.toBeNull();
+      // @ts-expect-error test access
+      expect(store.v1StreamId).toBe('s1');
+      store.savePartialResponse();
+      // @ts-expect-error test access
+      expect(store.v1StreamId).toBeNull();
+    });
+
+    it('ignores complete message with empty content', () => {
+      const env: ServerEnvelope = { type: 'message', id: 'm1', content: '' };
+      // @ts-expect-error test access
+      store.handleEnvelope(env);
+      // Empty content message is still added
+      expect(store.messages.length).toBe(1);
+      expect(store.messages[0].content).toBe('');
+    });
+  });
 });
