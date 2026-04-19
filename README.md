@@ -37,6 +37,21 @@ npm run dev            # terminal 2 — dev server on :3000
 
 Open `http://localhost:3000` and start chatting.
 
+### Configuration
+
+Copy `.env.example` to `.env` to customize defaults:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_WS_URL` | `ws://127.0.0.1:8090` | WebSocket endpoint |
+| `VITE_AUTH_TOKEN` | _(empty)_ | Auth token (optional) |
+
+Settings can also be changed at runtime via the gear icon in the sidebar.
+
 ## WebSocket Protocol (v2)
 
 Block-level streaming protocol designed for real-time AI chat:
@@ -77,7 +92,7 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (95 tests, 12 files)
+# Unit tests (98 tests, 12 files)
 npm test
 
 # Browser E2E tests (26 tests — real Chromium)
