@@ -48,6 +48,8 @@
 /help — Show this help message
 /export — Export chat as markdown
 /search or Ctrl+F — Search messages
+Ctrl+Shift+T — Toggle theme
+Ctrl+/ — Show keyboard shortcuts
 ↑ / ↓ — Navigate input history
 Enter — Send message
 Shift+Enter — New line`);
