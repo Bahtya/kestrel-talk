@@ -32,4 +32,15 @@ export function toggleTheme(): Theme {
 
 export function initTheme(): void {
   setTheme(getTheme());
+
+  try {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', () => {
+      if (!localStorage.getItem('theme')) {
+        setTheme(systemPreference());
+      }
+    });
+  } catch {
+    // matchMedia not available
+  }
 }
