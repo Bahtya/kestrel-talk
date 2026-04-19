@@ -93,10 +93,10 @@ Also supports simple streaming for backward compatibility:
 ## Testing
 
 ```bash
-# Unit tests (110 tests, 13 files)
+# Unit tests (114 tests, 13 files)
 npm test
 
-# Browser E2E tests (31 tests — real Chromium)
+# Browser E2E tests (34 tests — real Chromium)
 npx playwright install chromium   # first time only
 npx playwright test
 
@@ -106,7 +106,7 @@ node e2e-test.mjs
 
 ### Browser E2E coverage
 
-Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search with highlight animation, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks, /help and /export commands, reconnect indicator, toast notifications, mobile hamburger toggle, code line numbers, theme toggle, connected toast, timestamps, error retry, Escape closes settings.
+Real browser tests verifying: empty state, WebSocket connection, online status, message send/receive, streaming blocks, code highlighting, copy buttons, thinking blocks, tool calls, Ctrl+F search with highlight animation, export download, /clear command, input history, settings panel, mobile layout (375×812), scroll-to-bottom, date separators, checkmarks, /help and /export commands, reconnect indicator, toast notifications, mobile hamburger toggle, code line numbers, theme toggle, connected toast, timestamps, error retry, Escape closes settings, theme persistence across reload, image block rendering, v1 streaming response.
 
 ## Commands
 
@@ -155,7 +155,7 @@ src/
 │   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar, ConnectionSettings
 │   ├── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
 │   └── ToastContainer.svelte, ErrorBoundary.svelte
-└── __tests__/       Unit tests (110 tests, 13 files)
+└── __tests__/       Unit tests (114 tests, 13 files)
 ```
 
 ## License
