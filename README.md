@@ -155,7 +155,7 @@ src/
 │   ├── chat/        MessageList, MessageBubble, MessageInput, StreamingResponse, SearchBar, ConnectionSettings
 │   ├── blocks/      TextBlock, CodeBlock, StreamingCodeBlock, ThinkingBlock, ToolBlock, ImageBlock
 │   └── ToastContainer.svelte, ErrorBoundary.svelte
-└── __tests__/       Unit tests (115 tests, 13 files)
+└── __tests__/       Unit tests (121 tests, 13 files)
 ```
 
 ## License

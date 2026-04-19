@@ -59,7 +59,7 @@
   }
 
   .tool-block.result {
-    border-color: rgba(76, 175, 80, 0.2);
+    border-color: var(--accent-online);
   }
 
   .tool-header {
@@ -90,7 +90,7 @@
   .tool-badge {
     font-size: 11px;
     color: var(--accent);
-    background: rgba(82, 136, 193, 0.1);
+    background: var(--bg-overlay);
     padding: 1px 6px;
     border-radius: 3px;
   }
