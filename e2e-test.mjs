@@ -201,6 +201,37 @@ async function runTests() {
     ws.close();
   });
 
+  await test('13. Interleaved block streaming', async () => {
+    const { ws, messages } = await connect();
+    await waitForNew(messages, 0, m => m.type === 'welcome');
+    // Skip to interleaved response (index 6: 0-5 text/rust/python/tool/image/error, then v1 at 6)
+    for (let i = 0; i < 8; i++) {
+      await sendAndWait(ws, messages, `t13-${i}`, `skip ${i}`);
+    }
+
+    // Check that blocks were interleaved: multiple block_starts before any block_ends
+    const blockStarts = messages.filter(m => m.type === 'block_start');
+    if (blockStarts.length < 3) throw new Error(`Expected 3+ block_starts, got ${blockStarts.length}`);
+    ws.close();
+  });
+
+  await test('14. Image protocol message', async () => {
+    const { ws, messages } = await connect();
+    await waitForNew(messages, 0, m => m.type === 'welcome');
+    // Skip to image protocol message (index 8)
+    for (let i = 0; i < 8; i++) {
+      await sendAndWait(ws, messages, `t14-${i}`, `skip ${i}`);
+    }
+
+    // Image response sends type:image without response_end
+    const before = messages.length;
+    ws.send(JSON.stringify({ type: 'message', id: 't14-img', content: 'image' }));
+    await waitForNew(messages, before, m => m.type === 'image');
+    const imageMsg = messages.find(m => m.type === 'image');
+    if (!imageMsg.url) throw new Error('No image URL');
+    ws.close();
+  });
+
   console.log(`\n=== Results: ${passed} passed, ${failed} failed ===\n`);
   process.exit(failed > 0 ? 1 : 0);
 }
