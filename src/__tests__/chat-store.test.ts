@@ -16,7 +16,7 @@ vi.mock('../lib/utils/storage', () => ({
   loadMessages: () => [],
   showToast: vi.fn(),
   getToasts: () => [],
-  subscribeToToasts: () => () => {},
+  subscribeToasts: () => () => {},
 }));
 
 vi.mock('../lib/ws/connection', () => {
