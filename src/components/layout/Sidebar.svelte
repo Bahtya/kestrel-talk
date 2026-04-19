@@ -58,7 +58,7 @@
         </div>
         <div class="chat-row">
           <span class="chat-preview">
-            {#if chatStore.activeResponse}
+            {#if chatStore.isTyping || chatStore.activeResponse}
               typing...
             {:else if chatStore.connectionState === 'connected'}
               {lastMsg ? lastMsgPreview : 'No messages yet'}
@@ -66,7 +66,7 @@
               {chatStore.connectionState}
             {/if}
           </span>
-          {#if chatStore.connectionState === 'connected' && !chatStore.activeResponse}
+          {#if chatStore.connectionState === 'connected' && !chatStore.activeResponse && !chatStore.isTyping}
             <span class="online-dot"></span>
           {/if}
         </div>
