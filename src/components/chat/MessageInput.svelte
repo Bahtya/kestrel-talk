@@ -156,7 +156,7 @@ Shift+Enter — New line`);
   }
 
   .reconnect-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-overlay);
     border: 1px solid var(--border-light);
     color: var(--text-secondary);
     padding: 2px 10px;
@@ -167,7 +167,7 @@ Shift+Enter — New line`);
   }
 
   .reconnect-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--bg-overlay-hover);
   }
 
   .input-wrapper {

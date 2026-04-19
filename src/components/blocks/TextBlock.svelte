@@ -41,7 +41,7 @@
   }
 
   .text-block :global(code) {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-overlay);
     padding: 2px 6px;
     border-radius: 3px;
     font-family: var(--font-mono);
@@ -87,7 +87,7 @@
   }
 
   .text-block :global(.spoiler) {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--bg-overlay-hover);
     color: transparent;
     border-radius: 3px;
     padding: 0 4px;
@@ -97,7 +97,7 @@
   }
 
   .text-block :global(.spoiler.revealed) {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-overlay);
     color: inherit;
   }
 

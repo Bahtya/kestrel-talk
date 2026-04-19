@@ -59,8 +59,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-overlay);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   .code-lang {
@@ -82,7 +82,7 @@
   }
 
   .copy-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-overlay);
     color: var(--text-primary);
   }
 
@@ -98,7 +98,7 @@
     text-align: right;
     user-select: none;
     flex-shrink: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid var(--border-subtle);
   }
 
   .line-numbers span {

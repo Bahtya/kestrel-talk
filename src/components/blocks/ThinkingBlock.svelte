@@ -30,7 +30,7 @@
 
 <style>
   .thinking-block {
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     margin: 8px 0;
     overflow: hidden;
@@ -68,7 +68,7 @@
 
   .thinking-content {
     padding: 8px 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-subtle);
     font-size: 13px;
     color: var(--text-secondary);
     line-height: 1.5;

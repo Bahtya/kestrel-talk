@@ -165,7 +165,7 @@
 
   .copy-btn:hover {
     opacity: 1 !important;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-overlay);
   }
 
   .bubble-time {
