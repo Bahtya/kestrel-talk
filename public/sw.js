@@ -40,7 +40,7 @@ self.addEventListener('fetch', (e) => {
           caches.open(CACHE).then((cache) => cache.put(e.request, clone));
         }
         return response;
-      }).catch(() => cached || new Response('Offline', { status: 503 }));
+      }).catch(() => cached || new Response('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>kestrel-talk — Offline</title><style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#0e1621;color:#f5f5f5}div{text-align:center}h1{font-size:20px;margin:0 0 8px}p{color:#8b9bab;font-size:14px}</style></head><body><div><h1>You\'re offline</h1><p>Check your connection and try again.</p></div></body></html>', { status: 503, headers: { 'Content-Type': 'text/html' } }));
       return cached || fetched;
     })
   );

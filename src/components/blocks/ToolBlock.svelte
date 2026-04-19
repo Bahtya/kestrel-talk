@@ -74,6 +74,16 @@
     list-style: none;
   }
 
+  .tool-header::before {
+    content: '▸';
+    font-size: 11px;
+    transition: transform 0.15s;
+  }
+
+  .tool-block[open] > .tool-header::before {
+    transform: rotate(90deg);
+  }
+
   .tool-header::-webkit-details-marker {
     display: none;
   }
