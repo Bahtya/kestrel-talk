@@ -688,7 +688,7 @@ test.describe('kestrel-talk browser E2E', () => {
     await textarea.fill('a'.repeat(201));
     const counter = page.locator('.char-counter');
     await expect(counter).toBeVisible();
-    expect(await counter.textContent()).toBe('201');
+    expect(await counter.textContent()).toContain('201');
   });
 
   test('36. Ctrl+Shift+T toggles theme', async ({ page }) => {

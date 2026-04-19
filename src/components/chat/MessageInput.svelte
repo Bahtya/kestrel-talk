@@ -132,7 +132,7 @@ Shift+Enter — New line`);
     {/if}
   </div>
   {#if charCount > 200}
-    <div class="char-counter" class:over-limit>{charCount} / {MAX_LENGTH}</div>
+    <div class="char-counter" class:over-limit={overLimit}>{charCount} / {MAX_LENGTH}</div>
   {/if}
 </div>
 
