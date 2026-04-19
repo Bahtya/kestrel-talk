@@ -13,6 +13,15 @@
 
   let theme = $state(getTheme());
 
+  // Sync theme with external changes (keyboard shortcut)
+  $effect(() => {
+    const observer = new MutationObserver(() => {
+      theme = document.documentElement.getAttribute('data-theme') ?? 'dark';
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  });
+
   function handleToggleTheme() {
     theme = toggleTheme();
   }
