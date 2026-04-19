@@ -113,21 +113,23 @@ export class ChatStore {
   retry(messageId: string): void {
     const idx = this.messages.findIndex((m) => m.id === messageId);
     if (idx === -1) return;
-    // Find the last user message before this error
     for (let i = idx - 1; i >= 0; i--) {
       if (this.messages[i].role === 'user') {
         const text = this.messages[i].content;
-        // Remove from the user message onward (including the error)
         this.messages = this.messages.slice(0, i);
         this.persist();
-        // Re-send
         this.send(text);
         return;
       }
     }
+    showToast('No user message found to retry', 'error');
   }
 
   send(text: string): void {
+    if (this.connectionState !== 'connected') {
+      showToast('Not connected — please wait', 'error');
+      return;
+    }
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',

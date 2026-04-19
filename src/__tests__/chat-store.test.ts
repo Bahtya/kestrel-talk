@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ServerEnvelope } from '../lib/ws/protocol';
+import { showToast } from '../lib/utils/storage';
 
 vi.mock('../lib/utils/notify', () => ({
   playNotification: vi.fn(),
@@ -269,6 +270,9 @@ describe('ChatStore', () => {
 
   describe('retry', () => {
     it('retries by resending the user message before the error', () => {
+      // Set connected state so send() works
+      store.connectionState = 'connected';
+
       // Send a user message
       store.send('hello');
       expect(store.messages.length).toBe(1);
@@ -297,10 +301,24 @@ describe('ChatStore', () => {
     });
 
     it('does nothing if message not found', () => {
+      store.connectionState = 'connected';
       store.send('test');
       const count = store.messages.length;
       store.retry('nonexistent-id');
       expect(store.messages.length).toBe(count);
+    });
+
+    it('shows toast when retrying with no user message', () => {
+      const env: ServerEnvelope = {
+        type: 'error',
+        id: 'e1',
+        code: 'timeout',
+        content: 'Request timed out',
+      };
+      // @ts-expect-error test access
+      store.handleEnvelope(env);
+      store.retry('e1');
+      expect(showToast).toHaveBeenCalledWith('No user message found to retry', 'error');
     });
   });
 });
