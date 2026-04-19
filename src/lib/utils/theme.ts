@@ -15,9 +15,13 @@ export function getTheme(): Theme {
   return (localStorage.getItem('theme') as Theme) || systemPreference();
 }
 
+const THEME_COLORS: Record<Theme, string> = { dark: '#0e1621', light: '#e8e0db' };
+
 export function setTheme(theme: Theme): void {
   localStorage.setItem('theme', theme);
   document.documentElement.setAttribute('data-theme', theme);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', THEME_COLORS[theme]);
 }
 
 export function toggleTheme(): Theme {

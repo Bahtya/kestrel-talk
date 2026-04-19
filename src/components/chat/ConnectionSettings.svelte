@@ -296,7 +296,7 @@
   }
 
   .perm-btn:hover {
-    background: rgba(var(--accent-rgb, 0, 136, 255), 0.1);
+    background: var(--bg-overlay);
   }
 
   .perm-denied {
