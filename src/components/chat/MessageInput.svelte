@@ -184,7 +184,7 @@ Shift+Enter — New line`);
     outline: none;
     color: var(--text-primary);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.4;
     resize: none;
     max-height: 150px;
