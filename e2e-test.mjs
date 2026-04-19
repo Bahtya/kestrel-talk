@@ -167,8 +167,8 @@ async function runTests() {
   await test('10. v1 simple streaming', async () => {
     const { ws, messages } = await connect();
     await waitForNew(messages, 0, m => m.type === 'welcome');
-    // Response 5 is v1 streaming
-    for (let i = 0; i < 5; i++) {
+    // Response 6 is v1 streaming (0-5 are text, rust, python, tool, image, error)
+    for (let i = 0; i < 6; i++) {
       await sendAndWait(ws, messages, `t10a-${i}`, `skip ${i}`);
     }
     await sendAndWait(ws, messages, 't10b', 'v1');

@@ -9,7 +9,7 @@
   });
 </script>
 
-<div class="toast-container" aria-live="polite">
+<div class="toast-container" role="status" aria-live="polite" aria-atomic="false">
   {#each toasts as toast (toast.id)}
     <div class="toast" class:error={toast.type === 'error'} class:success={toast.type === 'success'}>
       {toast.message}

@@ -61,6 +61,33 @@ const responses = [
     v1: true,
     content: "This is a v1 simple streaming response. It uses the old streaming format with chunk and done fields. Markdown works too: **bold**, _italic_, `code`.",
   },
+  // Interleaved blocks: text starts, code appears before text ends, then both finish
+  {
+    interleaved: true,
+    blocks: [
+      { id: 'b1', type: 'text', chunks: ['Analyzing your request...', '\n\nBased on my analysis:'] },
+      { id: 'b2', type: 'code', language: 'typescript', chunks: ['const result = ', 'analyze(input);', '\nconsole.log(result);'] },
+      { id: 'b3', type: 'text', chunks: ['This demonstrates ', 'interleaved block streaming.'] },
+    ],
+  },
+  // Image block via protocol
+  {
+    image: { url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Kestrel_%28Falco_tinnunculus%29_%2822662690822%29.jpg/320px-Kestrel_%28Falco_tinnunculus%29_%2822662690822%29.jpg', caption: 'A common kestrel' },
+  },
+  // Auth error
+  {
+    blocks: [
+      { type: 'text', content: 'Checking permissions...' },
+    ],
+    error: { code: 'auth_required', message: 'You need to authenticate to perform this action.' },
+  },
+  // Timeout error
+  {
+    blocks: [
+      { type: 'text', content: 'Processing your request...' },
+    ],
+    error: { code: 'timeout', message: 'The request timed out. Please try again.' },
+  },
 ];
 
 wss.on('connection', (ws, req) => {
@@ -116,6 +143,44 @@ wss.on('connection', (ws, req) => {
         await delay(15);
       }
       send({ type: 'streaming', id, chunk: '', done: true });
+      return;
+    }
+
+    // Image protocol message
+    if (response.image) {
+      await delay(300);
+      send({ type: 'image', id: uuid(), url: response.image.url, caption: response.image.caption });
+      return;
+    }
+
+    // Interleaved block streaming
+    if (response.interleaved) {
+      const responseId = uuid();
+      send({ type: 'response_start', id: responseId, reply_to: msg.id });
+
+      // Start all blocks
+      for (const block of response.blocks) {
+        send({ type: 'block_start', id: block.id, response_id: responseId, block_type: block.type, language: block.language ?? null });
+      }
+
+      // Stream chunks round-robin across all blocks
+      const remaining = response.blocks.map((b) => [...b.chunks]);
+      while (remaining.some((r) => r.length > 0)) {
+        for (let i = 0; i < remaining.length; i++) {
+          if (remaining[i].length > 0) {
+            const chunk = remaining[i].shift();
+            send({ type: 'block_delta', id: response.blocks[i].id, response_id: responseId, content: chunk });
+            await delay(15);
+          }
+        }
+      }
+
+      // End all blocks
+      for (const block of response.blocks) {
+        send({ type: 'block_end', id: block.id, response_id: responseId });
+      }
+
+      send({ type: 'response_end', id: responseId });
       return;
     }
 
