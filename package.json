@@ -12,6 +12,9 @@
   "homepage": "https://github.com/Bahtya/kestrel-talk#readme",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
