@@ -19,7 +19,7 @@
 
   let lastMsg = $derived(chatStore.messages.length > 0 ? chatStore.messages[chatStore.messages.length - 1] : null);
   let lastMsgTime = $derived(lastMsg ? formatTime(lastMsg.timestamp) : '');
-  let lastMsgPreview = $derived(() => {
+  let lastMsgPreview = $derived.by(() => {
     if (!lastMsg) return '';
     const text = lastMsg.blocks.length > 0 ? lastMsg.blocks[lastMsg.blocks.length - 1].content : lastMsg.content;
     return text.slice(0, 40).replace(/\n/g, ' ');
@@ -52,7 +52,7 @@
             {#if chatStore.activeResponse}
               typing...
             {:else if chatStore.connectionState === 'connected'}
-              {lastMsg ? lastMsgPreview() : 'No messages yet'}
+              {lastMsg ? lastMsgPreview : 'No messages yet'}
             {:else}
               {chatStore.connectionState}
             {/if}

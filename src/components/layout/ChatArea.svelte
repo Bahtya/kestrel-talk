@@ -39,7 +39,7 @@ Escape — Close search/sidebar`);
     }
   }
 
-  let statusText = $derived(() => {
+  let statusText = $derived.by(() => {
     if (chatStore.isTyping) return 'typing...';
     if (chatStore.connectionState === 'connected') return 'online';
     if (chatStore.connectionState === 'connecting') return 'connecting...';
@@ -63,7 +63,7 @@ Escape — Close search/sidebar`);
     <div class="header-info">
       <div class="header-name">kestrel-agent</div>
       <div class="header-status" class:online={isOnline}>
-        {statusText()}
+        {statusText}
       </div>
     </div>
     <div class="header-actions">

@@ -269,22 +269,29 @@ export class ChatStore {
 
   private handleError(id: string, code: string, content: string): void {
     this.lastError = `${code}: ${content}`;
+    // Preserve any partial blocks streamed before the error
+    const priorBlocks = this.activeResponse?.id === id
+      ? Array.from(this.activeResponse.blocks.values()).filter((b) => b.content.length > 0)
+      : [];
     if (this.activeResponse?.id === id) {
       this.activeResponse = null;
     }
+    const errorBlock: Block = {
+      id: crypto.randomUUID(),
+      responseId: id,
+      blockType: 'error',
+      language: null,
+      content,
+      status: 'done',
+      errorCode: code,
+    };
+    const allBlocks = [...priorBlocks, errorBlock];
+    const fullContent = allBlocks.map((b) => b.content).join('\n');
     const msg: ChatMessage = {
       id,
       role: 'assistant',
-      content,
-      blocks: [{
-        id: crypto.randomUUID(),
-        responseId: id,
-        blockType: 'error',
-        language: null,
-        content,
-        status: 'done',
-        errorCode: code,
-      }],
+      content: fullContent,
+      blocks: allBlocks,
       timestamp: new Date(),
     };
     this.messages = [...this.messages, msg];

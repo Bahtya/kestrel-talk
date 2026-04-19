@@ -202,6 +202,26 @@ describe('ChatStore', () => {
       expect(store.activeResponse).toBeNull();
       expect(store.messages[0].blocks[0].blockType).toBe('error');
     });
+
+    it('preserves streamed blocks before error', () => {
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'response_start', id: 'r1', reply_to: '' });
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'block_start', id: 'b1', response_id: 'r1', block_type: 'text', language: null });
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'block_delta', id: 'b1', response_id: 'r1', content: 'Working on it...' });
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'block_end', id: 'b1', response_id: 'r1' });
+      // Error arrives after blocks were streamed
+      // @ts-expect-error test access
+      store.handleEnvelope({ type: 'error', id: 'r1', code: 'rate_limit', content: 'Too many requests' });
+      expect(store.activeResponse).toBeNull();
+      // Should have both the text block and the error block
+      expect(store.messages[0].blocks.length).toBe(2);
+      expect(store.messages[0].blocks[0].blockType).toBe('text');
+      expect(store.messages[0].blocks[0].content).toBe('Working on it...');
+      expect(store.messages[0].blocks[1].blockType).toBe('error');
+    });
   });
 
   describe('v1 streaming compatibility', () => {
