@@ -360,9 +360,9 @@ export class ChatStore {
     }
 
     if (chunk && this.activeResponse) {
-      const blocks = new Map(this.activeResponse.blocks);
-      const block = blocks.values().next().value;
+      const block = Array.from(this.activeResponse.blocks.values())[0];
       if (block) {
+        const blocks = new Map(this.activeResponse.blocks);
         blocks.set(block.id, { ...block, content: block.content + chunk });
         this.activeResponse = { ...this.activeResponse, blocks };
       }
