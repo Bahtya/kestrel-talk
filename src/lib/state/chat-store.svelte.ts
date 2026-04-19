@@ -47,23 +47,7 @@ export class ChatStore {
     } else if (state === 'disconnected' || state === 'error') {
       this.reconnectAttempt++;
       if (state === 'error') this.lastError = 'Connection failed';
-      // Save partial response as message if stream was interrupted
-      if (this.activeResponse) {
-        const blocks = Array.from(this.activeResponse.blocks.values());
-        if (blocks.some((b) => b.content.length > 0)) {
-          const content = blocks.map((b) => b.content).join('\n');
-          const msg: ChatMessage = {
-            id: this.activeResponse.id,
-            role: 'assistant',
-            content,
-            blocks,
-            timestamp: new Date(),
-          };
-          this.messages = [...this.messages, msg];
-          this.persist();
-        }
-        this.activeResponse = null;
-      }
+      this.savePartialResponse();
       this.isTyping = false;
     }
   }
@@ -78,6 +62,24 @@ export class ChatStore {
 
   updateConnection(url: string, token?: string): void {
     this.connection = this.createConnection(url, token);
+  }
+
+  savePartialResponse(): void {
+    if (!this.activeResponse) return;
+    const blocks = Array.from(this.activeResponse.blocks.values());
+    if (blocks.some((b) => b.content.length > 0)) {
+      const content = blocks.map((b) => b.content).join('\n');
+      const msg: ChatMessage = {
+        id: this.activeResponse.id,
+        role: 'assistant',
+        content,
+        blocks,
+        timestamp: new Date(),
+      };
+      this.messages = [...this.messages, msg];
+      this.activeResponse = null;
+      this.persist();
+    }
   }
 
   clearHistory(): void {

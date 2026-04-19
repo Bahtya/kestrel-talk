@@ -12,7 +12,16 @@
   onMount(() => {
     chatStore.connect();
     initNotifications();
-    return () => chatStore.disconnect();
+
+    function onBeforeUnload() {
+      chatStore.savePartialResponse();
+    }
+    window.addEventListener('beforeunload', onBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      chatStore.disconnect();
+    };
   });
 </script>
 
