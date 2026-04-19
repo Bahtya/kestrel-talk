@@ -5,6 +5,12 @@ import { isHtml, sanitizeHtml } from './html-sanitizer';
 const standardMarkdown = new Marked({
   gfm: true,
   breaks: true,
+  renderer: {
+    link({ href, title, text }) {
+      const t = title ? ` title="${title}"` : '';
+      return `<a href="${href}"${t} target="_blank" rel="noopener noreferrer">${text}</a>`;
+    },
+  },
 });
 
 export function renderContent(content: string): string {

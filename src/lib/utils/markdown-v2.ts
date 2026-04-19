@@ -63,6 +63,12 @@ export const markdownV2 = new Marked({
   gfm: true,
   breaks: true,
   extensions: [underlineExtension, strikethroughExtension, spoilerExtension],
+  renderer: {
+    link({ href, title, text }) {
+      const t = title ? ` title="${title}"` : '';
+      return `<a href="${href}"${t} target="_blank" rel="noopener noreferrer">${text}</a>`;
+    },
+  },
 });
 
 export interface V2ValidationResult {
