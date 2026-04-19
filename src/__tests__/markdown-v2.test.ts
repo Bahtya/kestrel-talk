@@ -33,4 +33,15 @@ describe('validateMarkdownV2', () => {
     const result = validateMarkdownV2('Just plain text with *bold* and _italic_');
     expect(result.valid).toBe(true);
   });
+
+  it('validates balanced underline markers', () => {
+    const result = validateMarkdownV2('This is __underlined__ text');
+    expect(result.valid).toBe(true);
+  });
+
+  it('rejects unbalanced underline markers', () => {
+    const result = validateMarkdownV2('This is __unbalanced text');
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
 });
