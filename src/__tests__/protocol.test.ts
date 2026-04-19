@@ -142,6 +142,24 @@ describe('parseEnvelope', () => {
     const https = parseEnvelope('{"type":"image","id":"i1","url":"https://example.com/img.png"}');
     expect(https).not.toBeNull();
   });
+
+  it('accepts block_start with image block type', () => {
+    const raw = '{"type":"block_start","id":"b1","response_id":"r1","block_type":"image"}';
+    const env = parseEnvelope(raw);
+    expect(env).not.toBeNull();
+    if (env!.type === 'block_start') {
+      expect(env!.block_type).toBe('image');
+    }
+  });
+
+  it('accepts block_start with error block type', () => {
+    const raw = '{"type":"block_start","id":"b1","response_id":"r1","block_type":"error"}';
+    const env = parseEnvelope(raw);
+    expect(env).not.toBeNull();
+    if (env!.type === 'block_start') {
+      expect(env!.block_type).toBe('error');
+    }
+  });
 });
 
 describe('createMessage', () => {
