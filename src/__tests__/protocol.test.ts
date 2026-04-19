@@ -114,6 +114,34 @@ describe('parseEnvelope', () => {
   it('rejects unknown envelope type', () => {
     expect(parseEnvelope('{"type":"unknown","id":"x"}')).toBeNull();
   });
+
+  it('rejects oversized raw envelope', () => {
+    const huge = 'x'.repeat(1_000_001);
+    expect(parseEnvelope(`{"type":"message","id":"x","content":"${huge}"}`)).toBeNull();
+  });
+
+  it('rejects oversized block_delta content', () => {
+    const huge = 'x'.repeat(100_001);
+    expect(parseEnvelope(`{"type":"block_delta","id":"b1","response_id":"r1","content":"${huge}"}`)).toBeNull();
+  });
+
+  it('rejects oversized streaming chunk', () => {
+    const huge = 'x'.repeat(100_001);
+    expect(parseEnvelope(`{"type":"streaming","id":"s1","chunk":"${huge}","done":false}`)).toBeNull();
+  });
+
+  it('rejects image with non-http URL', () => {
+    expect(parseEnvelope('{"type":"image","id":"i1","url":"javascript:alert(1)"}')).toBeNull();
+    expect(parseEnvelope('{"type":"image","id":"i1","url":"data:text/html,<h1>hi</h1>"}')).toBeNull();
+    expect(parseEnvelope('{"type":"image","id":"i1","url":"ftp://example.com/img.png"}')).toBeNull();
+  });
+
+  it('accepts image with http and https URLs', () => {
+    const http = parseEnvelope('{"type":"image","id":"i1","url":"http://example.com/img.png"}');
+    expect(http).not.toBeNull();
+    const https = parseEnvelope('{"type":"image","id":"i1","url":"https://example.com/img.png"}');
+    expect(https).not.toBeNull();
+  });
 });
 
 describe('createMessage', () => {

@@ -111,6 +111,18 @@ export type ClientEnvelope =
   | AuthEnvelope;
 
 const VALID_BLOCK_TYPES = new Set(['text', 'code', 'thinking', 'tool_call', 'tool_result']);
+const MAX_CONTENT_LENGTH = 100_000; // 100KB per content field
+const MAX_RAW_SIZE = 1_000_000; // 1MB max envelope size
+const VALID_IMAGE_PROTOCOLS = new Set(['https:', 'http:']);
+
+function isValidImageUrl(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol;
+    return VALID_IMAGE_PROTOCOLS.has(protocol);
+  } catch {
+    return false;
+  }
+}
 
 function isValidEnvelope(parsed: Record<string, unknown>): boolean {
   const t = parsed.type as string;
@@ -123,19 +135,19 @@ function isValidEnvelope(parsed: Record<string, unknown>): boolean {
     case 'error':
       return typeof parsed.id === 'string' && typeof parsed.code === 'string';
     case 'streaming':
-      return typeof parsed.id === 'string' && typeof parsed.chunk === 'string' && typeof parsed.done === 'boolean';
+      return typeof parsed.id === 'string' && typeof parsed.chunk === 'string' && parsed.chunk.length <= MAX_CONTENT_LENGTH && typeof parsed.done === 'boolean';
     case 'response_start':
       return typeof parsed.id === 'string';
     case 'block_start':
       return typeof parsed.id === 'string' && typeof parsed.response_id === 'string' && VALID_BLOCK_TYPES.has(parsed.block_type as string);
     case 'block_delta':
-      return typeof parsed.id === 'string' && typeof parsed.response_id === 'string' && typeof parsed.content === 'string';
+      return typeof parsed.id === 'string' && typeof parsed.response_id === 'string' && typeof parsed.content === 'string' && parsed.content.length <= MAX_CONTENT_LENGTH;
     case 'block_end':
       return typeof parsed.id === 'string' && typeof parsed.response_id === 'string';
     case 'response_end':
       return typeof parsed.id === 'string';
     case 'image':
-      return typeof parsed.id === 'string' && typeof parsed.url === 'string';
+      return typeof parsed.id === 'string' && typeof parsed.url === 'string' && isValidImageUrl(parsed.url);
     case 'typing':
       return true;
     default:
@@ -144,6 +156,7 @@ function isValidEnvelope(parsed: Record<string, unknown>): boolean {
 }
 
 export function parseEnvelope(raw: string): ServerEnvelope | null {
+  if (raw.length > MAX_RAW_SIZE) return null;
   try {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed.type !== 'string') return null;
