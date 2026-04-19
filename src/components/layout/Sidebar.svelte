@@ -237,7 +237,7 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 6px;
+    padding: 10px;
     border-radius: 50%;
     transition: background var(--duration-fast), color var(--duration-fast);
     flex-shrink: 0;
