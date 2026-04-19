@@ -17,7 +17,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           shiki: ['shiki'],
-          markdown: ['marked', 'dompurify', 'isomorphic-dompurify'],
+          markdown: ['marked', 'isomorphic-dompurify'],
         },
       },
     },
