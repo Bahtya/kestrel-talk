@@ -42,9 +42,14 @@
     updateNotifPermission();
   }
 
-  function handlePanelKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') showSettings = false;
-  }
+  $effect(() => {
+    if (!showSettings) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') showSettings = false;
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 </script>
 
 <div class="settings-section">
@@ -55,7 +60,7 @@
   </button>
 
   {#if showSettings}
-    <div class="settings-panel" onkeydown={handlePanelKeydown}>
+    <div class="settings-panel">
       <div class="settings-header">
         <span>Settings</span>
         <button class="close-btn" onclick={() => { showSettings = false; }} aria-label="Close settings">&times;</button>

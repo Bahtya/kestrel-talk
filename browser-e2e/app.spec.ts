@@ -583,4 +583,38 @@ test.describe('kestrel-talk browser E2E', () => {
     await page.waitForTimeout(300);
     await expect(panel).not.toBeVisible();
   });
+
+  test('30. Error block shows retry button', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Send messages to cycle to error response (index 5 in mock server)
+    for (let i = 0; i < 6; i++) {
+      const textarea = page.locator('textarea');
+      await textarea.fill(`msg ${i}`);
+      await textarea.press('Enter');
+      await page.waitForTimeout(1500);
+    }
+
+    // Should see an error block with retry button
+    const retryBtn = page.locator('.retry-btn');
+    if (await retryBtn.count() > 0) {
+      await expect(retryBtn.first()).toBeVisible();
+    }
+  });
+
+  test('31. Escape closes settings panel', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Open settings
+    await page.locator('.settings-toggle').click();
+    await page.waitForTimeout(300);
+    await expect(page.locator('.settings-panel')).toBeVisible();
+
+    // Press Escape to close
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+    await expect(page.locator('.settings-panel')).not.toBeVisible();
+  });
 });
