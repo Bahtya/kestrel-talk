@@ -617,4 +617,65 @@ test.describe('kestrel-talk browser E2E', () => {
     await page.waitForTimeout(300);
     await expect(page.locator('.settings-panel')).not.toBeVisible();
   });
+
+  test('32. Theme persists across reload', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Get initial theme
+    const initialTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+
+    // Toggle theme
+    const themeBtn = page.locator('[aria-label="Toggle theme"]');
+    await themeBtn.click();
+    await page.waitForTimeout(300);
+
+    const toggledTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(toggledTheme).not.toBe(initialTheme);
+
+    // Reload page
+    await page.reload();
+    await page.waitForTimeout(1500);
+
+    // Theme should persist
+    const afterReload = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    expect(afterReload).toBe(toggledTheme);
+  });
+
+  test('33. Image block renders with caption', async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Send 9 messages to reach image protocol response (index 8 in mock)
+    const textarea = page.locator('textarea');
+    for (let i = 0; i < 9; i++) {
+      await textarea.fill(`img-msg-${i}`);
+      await textarea.press('Enter');
+      await page.waitForTimeout(2000);
+    }
+
+    // Should see image block
+    const imageBlock = page.locator('.image-block').first();
+    await expect(imageBlock).toBeVisible({ timeout: 15000 });
+  });
+
+  test('34. V1 streaming response renders', async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+
+    // Send 7 messages to reach v1 streaming response (index 6)
+    const textarea = page.locator('textarea');
+    for (let i = 0; i < 7; i++) {
+      await textarea.fill(`v1-msg-${i}`);
+      await textarea.press('Enter');
+      await page.waitForTimeout(2000);
+    }
+
+    // Assistant bubble from v1 streaming should be visible
+    const bubbles = page.locator('.bubble.assistant');
+    const count = await bubbles.count();
+    expect(count).toBeGreaterThanOrEqual(7);
+  });
 });

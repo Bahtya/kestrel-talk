@@ -9,9 +9,16 @@
   let { content, streaming = false }: Props = $props();
 
   let renderedHtml = $derived(renderContent(content));
+
+  function handleClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('spoiler')) {
+      target.classList.toggle('revealed');
+    }
+  }
 </script>
 
-<div class="text-block" class:streaming>
+<div class="text-block" class:streaming onclick={handleClick}>
   {@html renderedHtml}
   {#if streaming}
     <span class="cursor"></span>

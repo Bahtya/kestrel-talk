@@ -72,4 +72,10 @@ describe('renderContent', () => {
     const result = renderContent('~~deleted~~');
     expect(result).toContain('<del>deleted</del>');
   });
+
+  it('renders spoilers without inline onclick', () => {
+    const result = renderContent('This is ||secret|| text');
+    expect(result).toContain('<span class="spoiler">secret</span>');
+    expect(result).not.toContain('onclick');
+  });
 });

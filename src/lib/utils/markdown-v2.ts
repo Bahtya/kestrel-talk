@@ -55,7 +55,7 @@ const spoilerExtension: TokenizerAndRendererExtension = {
     return undefined;
   },
   renderer(token: Tokens.Generic): string {
-    return `<span class="spoiler" onclick="this.classList.toggle('revealed')">${token.text}</span>`;
+    return `<span class="spoiler">${token.text}</span>`;
   },
 };
 
