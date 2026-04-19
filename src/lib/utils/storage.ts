@@ -46,7 +46,13 @@ export function saveMessages(messages: ChatMessage[]): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
   } catch (e) {
     if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-      showToast('Storage full — oldest messages may not be persisted', 'error');
+      // Try saving only the most recent messages
+      try {
+        const half = messages.slice(-Math.min(50, messages.length));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(half.map(serializeMessage)));
+      } catch {
+        showToast('Storage full — messages may not persist', 'error');
+      }
     }
   }
 }

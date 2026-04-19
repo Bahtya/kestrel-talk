@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { saveMessages, loadMessages, clearMessages, saveSetting, loadSetting } from '../lib/utils/storage';
 import type { ChatMessage } from '../lib/state/types';
 
@@ -71,6 +71,31 @@ describe('message persistence', () => {
     expect(loaded).toHaveLength(200);
     expect(loaded[0].id).toBe('msg-50');
     expect(loaded[199].id).toBe('msg-249');
+  });
+
+  it('falls back to fewer messages on quota exceeded', () => {
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    let callCount = 0;
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (key: string, value: string) {
+      callCount++;
+      if (callCount === 1) {
+        const error = new DOMException('Quota exceeded', 'QuotaExceededError');
+        throw error;
+      }
+      originalSetItem(key, value);
+    });
+
+    const msgs: ChatMessage[] = Array.from({ length: 100 }, (_, i) => ({
+      id: `msg-${i}`,
+      role: 'user' as const,
+      content: `Message ${i}`,
+      blocks: [],
+      timestamp: new Date(),
+    }));
+    saveMessages(msgs);
+    // Should have retried with fewer messages
+    expect(callCount).toBeGreaterThanOrEqual(2);
+    vi.restoreAllMocks();
   });
 });
 
