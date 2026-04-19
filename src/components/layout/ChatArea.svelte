@@ -25,6 +25,17 @@
     } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
       e.preventDefault();
       toggleTheme();
+    } else if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+      e.preventDefault();
+      chatStore.addSystemMessage(`**Keyboard shortcuts:**
+Enter — Send message
+Shift+Enter — New line
+Ctrl+F — Search messages
+Ctrl+Shift+T — Toggle theme
+Ctrl+/ — Show this help
+↑ / ↓ — Navigate input history
+End — Scroll to bottom
+Escape — Close search/sidebar`);
     }
   }
 
