@@ -29,6 +29,17 @@ export class WsConnection {
     this.reconnect = new ReconnectStrategy();
   }
 
+  private get connectionUrl(): string {
+    if (!this.token) return this.url;
+    try {
+      const url = new URL(this.url);
+      url.searchParams.set('token', this.token);
+      return url.toString();
+    } catch {
+      return this.url;
+    }
+  }
+
   onEnvelope(handler: EnvelopeHandler): void {
     this.envelopeHandler = handler;
   }
@@ -53,7 +64,7 @@ export class WsConnection {
     this.setState('connecting');
 
     try {
-      this.ws = new WebSocket(this.url);
+      this.ws = new WebSocket(this.connectionUrl);
       // @ts-expect-error test access
       if (typeof window !== 'undefined') window.__test_ws = this.ws;
     } catch {
